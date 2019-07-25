@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Count Down Live Wallpaper</string>
+    <string name="change_lang_button">Language</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="change_language_title">Choose Language</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your Sig</string>
+    <string name="reply_title">Default reply action</string>
+    <string name="wallpaper_description">Count down wallpaper xml layout</string>
+
+</resources>
