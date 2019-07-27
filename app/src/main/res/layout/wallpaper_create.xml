@@ -29,7 +29,7 @@
                 android:text="@string/countdown_name" />
 
             <EditText
-                android:id="@+id/editText"
+                android:id="@+id/labelEditText"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="25dp"
