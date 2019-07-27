@@ -1,10 +1,13 @@
-package com.example.countdownlivewallpaper;
+package com.pfoss.countdownlivewallpaper;
 
+import android.app.DatePickerDialog;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.SurfaceHolder;
 
 import java.util.Random;
@@ -46,8 +49,15 @@ public class SimpleWallpaper extends WallpaperService {
                 canvas = holder.lockCanvas();
                 if (canvas != null) {
                     // Draw on the Canvas!
-                    canvas.drawColor(Color.RED);
-                    setRandomColorAsBackground(canvas);
+                    Paint hourStyle = new Paint();
+                    canvas.drawPaint(hourStyle);
+                    hourStyle.setColor(Color.WHITE);
+                    int MY_DIP_VALUE = 40;
+                    int pixel = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                            MY_DIP_VALUE, getResources ().getDisplayMetrics());
+                    hourStyle.setTextSize(pixel);
+                    hourStyle.setTextAlign(Paint.Align.CENTER);
+                    canvas.drawText("This is Hourrr", 350, 500, hourStyle);
 
                 }
             } finally {
@@ -57,10 +67,6 @@ public class SimpleWallpaper extends WallpaperService {
             // Schedule the next frame
             handler.removeCallbacks(runnable);
             handler.postDelayed(runnable, 1000 / FPS);
-        }
-        private  void setRandomColorAsBackground(Canvas canvas){
-            Random rnd = new Random();
-            canvas.drawARGB(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
         }
 
         public SimpleWallpaperEngine() {
