@@ -1,15 +1,25 @@
 package com.pfoss.countdownlivewallpaper;
 
-import android.media.Image;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
-public class TimerRecord  implements Serializable {
-    private Image backgroundPicture;
+public class TimerRecord implements Serializable {
     private String label;
     private boolean priorToShow;
     private Date date;
+    private String imagePath;
+    private UUID id;
+
+    TimerRecord() {
+        this.id = UUID.randomUUID();
+    }
 
     public Date getDate() {
         return date;
@@ -17,10 +27,6 @@ public class TimerRecord  implements Serializable {
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public void setBackgroundPicture(Image backgroundPicture) {
-        this.backgroundPicture = backgroundPicture;
     }
 
     public void setLabel(String label) {
@@ -38,4 +44,43 @@ public class TimerRecord  implements Serializable {
     public void setPriorToShow(boolean priorToShow) {
         this.priorToShow = priorToShow;
     }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public Bitmap getBitmap() {
+        Bitmap bitmap = null;
+        try {
+            File f = new File(this.getImagePath(), this.getId() + ".png");
+            bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "  label: " + label
+                + " date: " + date
+                + "bitmapBase64: " + imagePath;
+    }
+
+    public boolean hasImage() {
+       return  (this.getImagePath() != null);
+    }
+
+
 }

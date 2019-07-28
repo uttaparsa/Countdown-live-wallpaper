@@ -14,8 +14,9 @@
     <string name="wallpaper_description">Count down wallpaper xml layout</string>
     <string name="title_activity_main2">Main2Activity</string>
 
-    <string name="label_select_timer">label</string>
+    <string name="label_select_timer">Name</string>
     <string name="create_new_button">Create</string>
     <string name="countdown_name">CountDown Name</string>
     <string name="set_date_and_time_button">set Date and Time</string>
+    <string name="background_image_of_timer">background image of timer</string>
 </resources>
