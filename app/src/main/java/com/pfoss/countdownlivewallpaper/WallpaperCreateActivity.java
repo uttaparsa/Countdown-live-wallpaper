@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +27,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
+import Helpers.BitmapHelper;
 
 
 public class WallpaperCreateActivity extends AppCompatActivity
@@ -33,10 +37,11 @@ public class WallpaperCreateActivity extends AppCompatActivity
     int day, month, year, hour, minute, second;
     int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal, secondFinal;
     EditText labelEditText;
-    Bitmap bitmap;
+    Bitmap bitmapOfUser;
     Button dateSetButton;
     Button createButton;
     ImageView backgroundImagePreview;
+    boolean hasUserSetDateAndTime = false;
     DatePickerDialog datePickerDialog;
     SharedPreferences timersSharedPreferences;
     TimerRecord timerRecord;
@@ -54,9 +59,8 @@ public class WallpaperCreateActivity extends AppCompatActivity
                 Log.i("GOT", "date button click");
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, month, day);
-                DatePickerDialog datePickerDialog = new DatePickerDialog(WallpaperCreateActivity.this, WallpaperCreateActivity.this, year, month, day);
+                datePickerDialog = new DatePickerDialog(WallpaperCreateActivity.this, WallpaperCreateActivity.this, year, month, day);
                 datePickerDialog.show();
-
             }
         });
     }
@@ -85,18 +89,23 @@ public class WallpaperCreateActivity extends AppCompatActivity
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         hourFinal = i;
         minuteFinal = i1;
+        hasUserSetDateAndTime = true;
         Log.i("GOT", "This is in order: " + yearFinal + " " + monthFinal + " " + dayFinal + " " + hourFinal + " " + minuteFinal + " ");
     }
 
     protected void createNewTimerClickable(View view) {
+        if (hasUserSetDateAndTime) {
+            initializeRecordObject(timerRecord);
+            saveRecord(timerRecord);
+            Log.i("SAVE", "new record has been saved");
+            Intent createIntent = new Intent(this, MainActivity.class);
+            createIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(createIntent);
+            this.finish();
+        } else {
+            Toast.makeText(this, this.getString(R.string.toast_date_not_set), Toast.LENGTH_SHORT).show();
+        }
 
-        initializeRecordObject(timerRecord);
-        saveRecord(timerRecord);
-        Log.i("SAVE", "new record has been saved");
-        Intent createIntent = new Intent(this, MainActivity.class);
-        createIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(createIntent);
-        finish();
     }
 
     private void initializeRecordObject(TimerRecord timerRecord) {
@@ -129,9 +138,16 @@ public class WallpaperCreateActivity extends AppCompatActivity
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                backgroundImagePreview.setImageBitmap(bitmap);
-                RecordManager.saveImageToInternalStorage(bitmap , new ContextWrapper(getApplicationContext()),timerRecord);
+                bitmapOfUser = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                DisplayMetrics metrics = getResources().getDisplayMetrics();
+
+                int screenWidth = metrics.widthPixels;
+                int screenHeight = metrics.heightPixels;
+
+                Bitmap scaledBitmap = BitmapHelper.scaleImageCenteredCrop(bitmapOfUser, screenHeight, screenWidth);
+
+                backgroundImagePreview.setImageBitmap(scaledBitmap);
+                RecordManager.saveImageToInternalStorage(scaledBitmap, new ContextWrapper(getApplicationContext()), timerRecord);
 
             } catch (Exception e) {
                 e.printStackTrace();

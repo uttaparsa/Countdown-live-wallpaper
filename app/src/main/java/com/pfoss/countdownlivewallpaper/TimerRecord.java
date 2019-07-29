@@ -19,6 +19,7 @@ public class TimerRecord implements Serializable {
 
     TimerRecord() {
         this.id = UUID.randomUUID();
+        this.label = "Label";
     }
 
     public Date getDate() {

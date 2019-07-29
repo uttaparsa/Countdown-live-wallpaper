@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="hour_text_size">20</integer>
+    <integer name="hour_text_y_axis">305</integer>
+    <integer name="hour_text_x_axis">265</integer>
+    <integer name="day_text_size">20</integer>
+    <integer name="day_text_y_axis">224</integer>
+    <integer name="day_text_x_axis">265</integer>
+    <integer name="minute_text_size">20</integer>
+    <integer name="minute_text_y_axis">386</integer>
+    <integer name="minute_text_x_axis">265</integer>
+    <integer name="second_text_size">20</integer>
+    <integer name="second_text_y_axis">467</integer>
+    <integer name="second_text_x_axis">265</integer>
+
+</resources>

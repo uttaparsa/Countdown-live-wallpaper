@@ -9,16 +9,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-
-//import static com.pfoss.countdownlivewallpaper.WallpaperCreateActivity.fetchRecords;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -64,25 +64,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Log.i("Main-options", "is in option");
+
         switch (item.getItemId()) {
             case R.id.settingsMenuItem:
                 startActivity(new Intent(this, SettingsActivity.class));
+
                 break;
             case R.id.countDownListMenuItem:
                 break;
             case R.id.plusItem:
-                Intent intent = new Intent(
-                        WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
-                intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-                        new ComponentName(this, SimpleWallpaper.class));
-                startActivity(intent);
+                Log.i("Main-options", "timer records is empty:" + timerRecords.isEmpty());
+                if (timerRecords.isEmpty()) {
+                    Toast.makeText(this, this.getString(R.string.no_timer_yet), Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(
+                            WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
+                    intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                            new ComponentName(this, CountDownWallpaperService.class));
+                    startActivity(intent);
+                }
                 break;
             case R.id.deleteTimer:
-                RecordManager.deleteRecord(timersSharedPreferences, timerRecords, currentRecord);
-                Log.i("Main-options", "Deleting a record");
-                refreshPreferences();
-                loadMain();
+                deleteTimer();
                 break;
             default:
                 return false;
@@ -90,8 +93,20 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+
     private void refreshPreferences() {
         timersSharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
+    }
+
+
+    protected void loadMain() {//MUST CHANGE THIS NAME
+        timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
+        if (timerRecords.isEmpty()) {
+            Log.i("LOADMAIN", "no timers exist right now");
+            backgroundImageView.setVisibility(View.INVISIBLE);
+        } else {
+            findPriorTimerToShow();
+        }
     }
 
     private void findPriorTimerToShow() {
@@ -106,16 +121,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    protected void loadMain() {//MUST CHANGE THIS NAME
-        timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
-        if (timerRecords.size() == 0) {
-            Log.i("LOADMAIN", "no timers exist right now");
-            backgroundImageView.setVisibility(View.INVISIBLE);
-        } else {
-            findPriorTimerToShow();
-        }
-    }
-
     private void showTimer(TimerRecord timerRecord) {
         currentRecord = timerRecord;
         if (timerRecord.hasImage()) {
@@ -125,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.i("showTimer", "trying to show : " + timerRecord.toString());
     }
+
 
     private void showRecordImage(TimerRecord record) {
         try {
@@ -136,6 +142,13 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    private void deleteTimer() {
+        Log.i("Main-options", "Deleting a record");
+        RecordManager.deleteRecord(timersSharedPreferences, timerRecords, currentRecord);
+        refreshPreferences();
+        loadMain();
     }
 
 }

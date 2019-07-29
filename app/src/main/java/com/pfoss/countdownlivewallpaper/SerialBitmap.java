@@ -26,7 +26,7 @@ public class SerialBitmap implements Serializable {
         return imageEncoded;
 
     }
-    // method for base64 to bitmap
+    // method for base64 to bitmapOfUser
     public static Bitmap decodeBase64(String input) {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory

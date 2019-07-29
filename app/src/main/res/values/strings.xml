@@ -19,4 +19,10 @@
     <string name="countdown_name">CountDown Name</string>
     <string name="set_date_and_time_button">set Date and Time</string>
     <string name="background_image_of_timer">background image of timer</string>
+    <string name="toast_date_not_set">Date must be set first</string>
+    <string name="no_timer_yet">Create a timer first</string>
+    <string name="hour_text">hours</string>
+    <string name="day_text">days</string>
+    <string name="minute_text">minutes</string>
+    <string name="second_text">seconds</string>
 </resources>

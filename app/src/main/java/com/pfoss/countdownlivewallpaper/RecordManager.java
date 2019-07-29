@@ -19,6 +19,15 @@ public class RecordManager {
         }
     }
 
+    public static TimerRecord getPriorToShowRecord(ArrayList<TimerRecord> records){
+        for (int i = 0; i < records.size(); i++) {
+            if (records.get(i).isPriorToShow()) {
+                return records.get(i);
+            }
+        }
+        return null;
+    }
+
     public static void removeById(ArrayList<TimerRecord> records, UUID id) {
         for (int i = 0; i < records.size(); i++) {
             if (records.get(i).getId().equals(id)) {
