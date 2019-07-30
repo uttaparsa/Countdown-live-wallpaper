@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private CountDownDisplay countDownDisplayFragment;
     private int FPS = CountDownWallpaperService.getFPS();
-
+    //change
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
