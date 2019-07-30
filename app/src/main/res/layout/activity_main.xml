@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.pfoss.countdownlivewallpaper.MainActivity">
+
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar"/>
+        layout="@layout/toolbar" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addTimerFloatingButton"
@@ -16,23 +17,24 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
+        android:focusable="true"
         android:onClick="onAddTimerButtonClick"
         app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_add_white_24dp"
-        android:focusable="true" />
+        app:srcCompat="@drawable/ic_add_white_24dp" />
+    
+    <fragment
+        android:id="@+id/surfaceFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.pfoss.countdownlivewallpaper.CountDownDisplay"
+        tools:layout="@layout/fragment_countdown_display">
+    </fragment>
 
-    <ImageView
-        android:id="@+id/backgroundImageView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:contentDescription="@string/background_image_of_timer"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@color/white" />
+
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

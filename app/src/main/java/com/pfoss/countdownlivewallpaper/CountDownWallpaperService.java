@@ -174,4 +174,8 @@ public class CountDownWallpaperService extends WallpaperService {
         }
 
     }
+
+    public static int getFPS() {
+        return FPS;
+    }
 }

@@ -6,40 +6,35 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.app.WallpaperManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
-    SharedPreferences timersSharedPreferences;
-    Toolbar toolbar;
-    ArrayList<TimerRecord> timerRecords;
-    ImageView backgroundImageView;
-    TimerRecord currentRecord;
+
+    private Toolbar toolbar;
+    private CountDownDisplay countDownDisplayFragment;
+    private int FPS = CountDownWallpaperService.getFPS();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        backgroundImageView = findViewById(R.id.backgroundImageView);
+
         initializeToolbar();
-        initializeRecords();
+        countDownDisplayFragment = (CountDownDisplay) getSupportFragmentManager().findFragmentById(R.id.surfaceFragment);
 
         Log.i("MAIN", "creating main");
 
 
     }
+
 
     @Override
     protected void onResume() {
@@ -47,11 +42,6 @@ public class MainActivity extends AppCompatActivity {
         Log.i("MAIN", "resuming main");
     }
 
-    private void initializeRecords() {
-
-        timersSharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
-        timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
-    }
 
     private void initializeToolbar() {
         toolbar = findViewById(R.id.toolbar);
@@ -79,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.countDownListMenuItem:
                 break;
             case R.id.plusItem:
-                Log.i("Main-options", "timer records is empty:" + timerRecords.isEmpty());
-                if (timerRecords.isEmpty()) {
+                Log.i("Main-options", "timer records is empty:" + countDownDisplayFragment.getTimerRecords().isEmpty());
+                if (countDownDisplayFragment.getTimerRecords().isEmpty()) {
                     Toast.makeText(this, this.getString(R.string.no_timer_yet), Toast.LENGTH_SHORT).show();
                 } else {
                     Intent intent = new Intent(
@@ -91,37 +81,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.deleteTimer:
-                deleteTimer();
+                countDownDisplayFragment.deleteTimer();
+
                 break;
             default:
                 return false;
         }
         return false;
     }
-
-
-    private void refreshPreferences() {
-        timersSharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
-    }
-
-
-    private void showRecordImage(TimerRecord record) {
-        try {
-            backgroundImageView.setImageBitmap(record.getBitmap());
-            backgroundImageView.setVisibility(View.VISIBLE);
-            backgroundImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            Log.i("showRecordImage", "image is set ok");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void deleteTimer() {
-        Log.i("Main-options", "Deleting a record");
-        RecordManager.deleteRecord(timersSharedPreferences, timerRecords, currentRecord);
-        refreshPreferences();
-
-    }
-
 }
+
+
+
