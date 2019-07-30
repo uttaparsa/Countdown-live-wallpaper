@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
     private CountDownDisplay countDownDisplayFragment;
     private int FPS = CountDownWallpaperService.getFPS();
 
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initializeToolbar() {
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
