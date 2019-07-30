@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         backgroundImageView = findViewById(R.id.backgroundImageView);
         initializeToolbar();
-        timersSharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
+        initializeRecords();
 
         Log.i("MAIN", "creating main");
 
@@ -47,8 +47,14 @@ public class MainActivity extends AppCompatActivity {
         Log.i("MAIN", "resuming main");
     }
 
+    private void initializeRecords() {
+
+        timersSharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
+        timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
+    }
+
     private void initializeToolbar() {
-        toolbar =  findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 

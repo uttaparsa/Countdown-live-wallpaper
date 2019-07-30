@@ -1,7 +1,6 @@
 package com.pfoss.countdownlivewallpaper;
 
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -15,8 +14,6 @@ import android.util.TypedValue;
 import android.view.SurfaceHolder;
 
 import java.util.ArrayList;
-
-import Helpers.BitmapHelper;
 
 
 public class CountDownWallpaperService extends WallpaperService {
@@ -81,7 +78,7 @@ public class CountDownWallpaperService extends WallpaperService {
                 if (canvas != null) {
                     // Draw on the Canvas!
                     drawBackground();
-                    drawHourText();
+                    drawUnitTexts();
                     Log.i("RUNNABLE", "draw text finished");
                 }
             } catch (Exception e) {
@@ -99,10 +96,9 @@ public class CountDownWallpaperService extends WallpaperService {
             }
         }
 
-        private void drawHourText() {
+        private void drawUnitTexts() {
             Paint unitsStyle = new Paint();
             unitsStyle.setTextSize(HOUR_TEXT_SIZE);
-//            unitsStyle.setTextAlign(Paint.Align.CENTER);
             unitsStyle.setColor(Color.WHITE);
             canvas.drawText(getResources().getString(R.string.day_text), DAY_TEXT_X_AXIS, DAY_TEXT_Y_AXIS, unitsStyle);
             canvas.drawText(getResources().getString(R.string.hour_text), HOUR_TEXT_X_AXIS, HOUR_TEXT_Y_AXIS, unitsStyle);
@@ -112,7 +108,7 @@ public class CountDownWallpaperService extends WallpaperService {
 
         private void drawBackground() {
             if (currentRecord.hasImage()) {
-                scaleAndDrawImage(canvas);
+                drawImageBackground(canvas);
                 Log.i("WALLPAPER", "wallpaper background set to image");
             } else {
                 canvas.drawColor(Color.WHITE);
@@ -120,14 +116,13 @@ public class CountDownWallpaperService extends WallpaperService {
             }
         }
 
-        private void scaleAndDrawImage(Canvas canvas) {
+        private void drawImageBackground(Canvas canvas) {
 
             DisplayMetrics metrics = getResources().getDisplayMetrics();
 
             int screenWidth = metrics.widthPixels;
             int screenHeight = metrics.heightPixels;
-//
-//            Bitmap destinationBitmap = BitmapHelper.scaleImageCenteredCrop(currentRecord.getBitmap() , screenHeight , screenWidth);
+
             Rect frameToDraw = new Rect(0, 0, screenWidth, screenHeight);
             RectF whereToDraw = new RectF(0, 0, screenWidth, screenHeight);
 
