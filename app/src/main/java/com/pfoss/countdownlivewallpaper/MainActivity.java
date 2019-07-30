@@ -17,8 +17,8 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private CountDownDisplay countDownDisplayFragment;
-    private int FPS = CountDownWallpaperService.getFPS();
+    private CountDownDisPlayFragment countDownDisplayFragment;
+    private int FPS = CountDownDrawer.getFPS();
     //change
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initializeToolbar();
-        countDownDisplayFragment = (CountDownDisplay) getSupportFragmentManager().findFragmentById(R.id.surfaceFragment);
+        countDownDisplayFragment = (CountDownDisPlayFragment) getSupportFragmentManager().findFragmentById(R.id.surfaceFragment);
 
         Log.i("MAIN", "creating main");
 

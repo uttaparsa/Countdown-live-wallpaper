@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -22,21 +23,27 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CountDownDisplay extends Fragment implements SurfaceHolder.Callback {
+public class CountDownDisPlayFragment extends Fragment implements SurfaceHolder.Callback {
     private SharedPreferences timersSharedPreferences;
-    private TimerRecord currentRecord;
     private ArrayList<TimerRecord> timerRecords;
-    private ImageView backgroundImageView;
-    SurfaceView surfaceView;
-    SurfaceHolder surfaceHolder;
-    public CountDownDisplay() {
+    private TimerRecord currentRecord;
+    private SurfaceView surfaceView;
+    private SurfaceHolder surfaceHolder;
+    private  CountDownDrawer drawer ;
+    private boolean visible = false;
+    private Handler handler = new Handler();
+    public CountDownDisPlayFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         initializeRecords();
+        timersSharedPreferences = getContext().getSharedPreferences("com.pfoss.countdownlivewallpaper", MainActivity.MODE_PRIVATE);
+        timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
+        currentRecord = RecordManager.getPriorToShowRecord(timerRecords);
 
     }
 
@@ -44,7 +51,7 @@ public class CountDownDisplay extends Fragment implements SurfaceHolder.Callback
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_countdown_display, container, false);
-//        backgroundImageView = view.findViewById(R.id.backgroundImageView);
+
 
         // Inflate the layout for this fragment
         surfaceView =  view.findViewById(R.id.surfaceView);
@@ -55,8 +62,16 @@ public class CountDownDisplay extends Fragment implements SurfaceHolder.Callback
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        drawer = new CountDownDrawer(handler , getActivity() , currentRecord );
+    }
+
+    @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
 
+        drawer.initRunnable(surfaceHolder , visible);
+        drawer.start();
     }
 
     @Override
@@ -67,8 +82,9 @@ public class CountDownDisplay extends Fragment implements SurfaceHolder.Callback
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
 
+        handler.removeCallbacks(drawer.getRunnable());
+        this.visible = false;
     }
-
 
 
     private void refreshPreferences() {
@@ -80,17 +96,6 @@ public class CountDownDisplay extends Fragment implements SurfaceHolder.Callback
         timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
     }
 
-    private void showRecordImage(TimerRecord record) {
-        try {
-            backgroundImageView.setImageBitmap(record.getBitmap());
-            backgroundImageView.setVisibility(View.VISIBLE);
-            backgroundImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            Log.i("showRecordImage", "image is set ok");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 
     protected void deleteTimer() {
         Log.i("Main-options", "Deleting a record");
