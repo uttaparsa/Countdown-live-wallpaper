@@ -1,34 +1,32 @@
-package com.pfoss.countdownlivewallpaper;
+package com.pfoss.countdownlivewallpaper.services;
 
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.SurfaceHolder;
+
+import com.pfoss.countdownlivewallpaper.CountDownDrawer;
+import com.pfoss.countdownlivewallpaper.data.TimerRecord;
+import com.pfoss.countdownlivewallpaper.utils.RecordManager;
 
 import java.util.ArrayList;
 
 
 public class CountDownWallpaperService extends WallpaperService {
 
-    private  SharedPreferences timersSharedPreferences;
-    private  ArrayList<TimerRecord> timerRecords;
-    private  TimerRecord currentRecord;
-    private  Handler handler = new Handler();
-    private  CountDownDrawer drawer;
+    private SharedPreferences timersSharedPreferences;
+    private ArrayList<TimerRecord> timerRecords;
+    private TimerRecord currentRecord;
+    private Handler handler = new Handler();
+    private CountDownDrawer drawer;
+
     @Override
     public Engine onCreateEngine() {
         timersSharedPreferences = getSharedPreferences("com.pfoss.countdownlivewallpaper", MODE_PRIVATE);
         timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
         currentRecord = RecordManager.getPriorToShowRecord(timerRecords);
-        drawer = new CountDownDrawer(handler , this , currentRecord );
+        drawer = new CountDownDrawer(handler, this, currentRecord);
         return new SimpleWallpaperEngine();
     }
 
@@ -40,7 +38,7 @@ public class CountDownWallpaperService extends WallpaperService {
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
-            drawer.initRunnable(getSurfaceHolder() , visible);
+            drawer.initRunnable(getSurfaceHolder(), visible);
 
         }
 
@@ -73,9 +71,7 @@ public class CountDownWallpaperService extends WallpaperService {
         public SimpleWallpaperEngine() {
 
 
-
         }
-
 
 
     }

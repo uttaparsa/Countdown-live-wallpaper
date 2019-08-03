@@ -1,12 +1,32 @@
 <resources>
     <!-- Reply Preference -->
-    <string-array name="reply_entries">
-        <item>Reply</item>
-        <item>Reply to all</item>
+    <string-array name="_choose_timer_theme_dialog_multi_choice_array">
+        <item>@string/gradient_theme_option</item>
+        <item>@string/image_theme_option</item>
+        <item>@string/solid_color_theme_option</item>
     </string-array>
 
-    <string-array name="reply_values">
-        <item>reply</item>
-        <item>reply_all</item>
+    <string-array name="units_prefs_entries">
+    <item>@string/year</item>
+    <item>@string/month</item>
+    <item>@string/day</item>
+    <item>@string/hour</item>
+    <item>@string/minute</item>
+    <item>@string/second</item>
+    </string-array>
+
+    <string-array name="units_prefs_values">
+        <item>year</item>
+        <item>month</item>
+        <item>day</item>
+        <item>hour</item>
+        <item>minute</item>
+        <item>second</item>
+    </string-array>
+
+    <string-array name="units_prefs_default_values">
+        <item>day</item>
+        <item>minute</item>
+        <item>second</item>
     </string-array>
 </resources>

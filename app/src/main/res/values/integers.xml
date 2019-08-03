@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="hour_text_size">20</integer>
+    <integer name="unit_text_size">20</integer>
+    <integer name="number_text_size">25</integer>
     <integer name="hour_text_y_axis">305</integer>
     <integer name="hour_text_x_axis">265</integer>
     <integer name="day_text_size">20</integer>
@@ -12,5 +13,16 @@
     <integer name="second_text_size">20</integer>
     <integer name="second_text_y_axis">467</integer>
     <integer name="second_text_x_axis">265</integer>
+    <integer name="gradient_start_x_axis">0</integer>
+    <integer name="gradient_start_y_axis">0</integer>
+    <integer name="gradient_end_x_axis">412</integer>
+    <integer name="gradient_end_y_axis">680</integer>
+    <integer name="numbers_x_axis">68</integer>
+    <integer name="space_between_units">55</integer>
+    <integer name="units_x_axis">265</integer>
+    <integer name="screen_height_in_dip">680</integer>
+    <integer name="label_text_size">50</integer>
+    <integer name="label_space_to_first_number">80</integer>
+    <integer name="screen_width_in_dip">412</integer>
 
 </resources>

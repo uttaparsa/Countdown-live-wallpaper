@@ -9,21 +9,50 @@
 
 
     <!-- Messages Preferences -->
-    <string name="signature_title">Your Sig</string>
-    <string name="reply_title">Default reply action</string>
     <string name="wallpaper_description">Count down wallpaper xml layout</string>
-    <string name="title_activity_main2">Main2Activity</string>
 
+    <!-- Create Timer -->
     <string name="label_select_timer">Name</string>
     <string name="create_new_button">Create</string>
     <string name="countdown_name">CountDown Name</string>
     <string name="set_date_and_time_button">set Date and Time</string>
     <string name="background_image_of_timer">background image of timer</string>
     <string name="toast_date_not_set">Date must be set first</string>
+
+    <string name="gradient_theme_option">Gradient</string>
+    <string name="image_theme_option">Image</string>
+    <string name="solid_color_theme_option">Solid Color</string>
+    <string name="choose_theme_dialog_title">Choose Theme</string>
+
+
+    <!-- Set as wallpaper error toast -->
     <string name="no_timer_yet">Create a timer first</string>
+
+    <!-- Timer UI -->
     <string name="hour_text">hours</string>
     <string name="day_text">days</string>
     <string name="minute_text">minutes</string>
     <string name="second_text">seconds</string>
+
+    <!-- Main Screen -->
+    <string name="add_new_entry">Add New</string>
+    <string name="set_as_wallpaper">Set As Wallaper</string>
+    <string name="list_of_timers">List</string>
+    <string name="timer_settings">Preferences</string>
+    <string name="delete_timer">Delete</string>
+    <string name="delete_done">Deleted Successfully</string>
+    <string name="no_record_to_delete">No record to delete</string>
+
+    <string name="preference_category">A fucking title</string>
+    <string name="year" >Year</string>
+    <string name="month" >Month</string>
+    <string name="day" >Day</string>
+    <string name="hour" >Hour</string>
+    <string name="minute" >Minute</string>
+    <string name="second" >Second</string>
+
+
+
+
 
 </resources>

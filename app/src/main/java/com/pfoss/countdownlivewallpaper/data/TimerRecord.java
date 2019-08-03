@@ -1,4 +1,5 @@
-package com.pfoss.countdownlivewallpaper;
+package com.pfoss.countdownlivewallpaper.data;
+
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,10 +17,19 @@ public class TimerRecord implements Serializable {
     private Date date;
     private String imagePath;
     private UUID id;
-
-    TimerRecord() {
+    private BackgroundTheme backgroundTheme;
+    private int Color;
+    public TimerRecord() {
         this.id = UUID.randomUUID();
         this.label = "Label";
+    }
+
+    public int getColor() {
+        return Color;
+    }
+
+    public void setColor(int color) {
+        Color = color;
     }
 
     public Date getDate() {
@@ -79,9 +89,19 @@ public class TimerRecord implements Serializable {
                 + "bitmapBase64: " + imagePath;
     }
 
+    public BackgroundTheme getBackgroundTheme() {
+        return backgroundTheme;
+    }
+
+    public void setBackgroundTheme(BackgroundTheme backgroundTheme) {
+        this.backgroundTheme = backgroundTheme;
+    }
+
     public boolean hasImage() {
        return  (this.getImagePath() != null);
     }
 
-
+    public enum BackgroundTheme{
+        GRADIENT , PICTURE , SOLID;
+    }
 }

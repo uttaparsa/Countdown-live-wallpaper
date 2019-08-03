@@ -1,10 +1,12 @@
-package com.pfoss.countdownlivewallpaper;
+package com.pfoss.countdownlivewallpaper.utils;
 
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.util.Log;
+
+import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,7 +48,7 @@ public class RecordManager {
             e.printStackTrace();
         }
     }
-    protected static ArrayList<TimerRecord> fetchRecords(SharedPreferences sharedPreferences) {
+     public static ArrayList<TimerRecord> fetchRecords(SharedPreferences sharedPreferences) {
         ArrayList<TimerRecord> newTimerRecords = new ArrayList<>();
         try {
             newTimerRecords = (ArrayList<TimerRecord>) ObjectSerializer.deserialize(sharedPreferences.getString("records", ObjectSerializer.serialize(new ArrayList<TimerRecord>())));

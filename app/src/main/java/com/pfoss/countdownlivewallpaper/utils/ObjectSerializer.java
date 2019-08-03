@@ -1,4 +1,4 @@
-package com.pfoss.countdownlivewallpaper;
+package com.pfoss.countdownlivewallpaper.utils;
 
 import android.util.Log;
 

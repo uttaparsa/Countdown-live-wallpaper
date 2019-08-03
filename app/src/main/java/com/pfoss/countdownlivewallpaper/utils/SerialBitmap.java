@@ -1,4 +1,4 @@
-package com.pfoss.countdownlivewallpaper;
+package com.pfoss.countdownlivewallpaper.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,7 +26,7 @@ public class SerialBitmap implements Serializable {
         return imageEncoded;
 
     }
-    // method for base64 to bitmapOfUser
+    // method for base64 to userSelectedBitmap
     public static Bitmap decodeBase64(String input) {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory

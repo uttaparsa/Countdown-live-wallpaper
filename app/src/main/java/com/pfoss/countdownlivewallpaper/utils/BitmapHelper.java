@@ -1,4 +1,4 @@
-package Helpers;
+package com.pfoss.countdownlivewallpaper.utils;
 
 import android.graphics.Bitmap;
 import android.util.Log;

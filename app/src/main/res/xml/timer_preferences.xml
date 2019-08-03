@@ -14,7 +14,18 @@
   ~ limitations under the License.
   -->
 
-<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/preference_category">
 
 
+        <MultiSelectListPreference
+            android:defaultValue="@array/units_prefs_default_values"
+            android:entries="@array/units_prefs_entries"
+            android:entryValues="@array/units_prefs_values"
+            android:key="multi_select_list_preference_1"
+            android:title="Multi select list preference" />
+
+    </PreferenceCategory>
 </androidx.preference.PreferenceScreen>
