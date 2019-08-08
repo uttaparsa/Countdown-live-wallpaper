@@ -34,7 +34,6 @@ public class MyLinearGradient extends Gradient {
     public void setEndColor(int endColor) {
         this.endColor = endColor;
         this.setShader(new LinearGradient(x0, y0, x1, y1, startColor, endColor, Shader.TileMode.CLAMP));
-
     }
 
     public void setStartColor(int startColor) {

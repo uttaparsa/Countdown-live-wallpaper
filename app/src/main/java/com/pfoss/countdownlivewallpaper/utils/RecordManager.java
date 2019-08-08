@@ -29,6 +29,14 @@ public class RecordManager {
         }
         return null;
     }
+    public static int getPriorToShowRecordIndex(ArrayList<TimerRecord> records){
+        for (int i = 0; i < records.size(); i++) {
+            if (records.get(i).isPriorToShow()) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     public static void removeById(ArrayList<TimerRecord> records, UUID id) {
         for (int i = 0; i < records.size(); i++) {
@@ -84,10 +92,12 @@ public class RecordManager {
         return directory.getAbsolutePath();
     }
     public static void deleteRecord(SharedPreferences sharedPreferences ,ArrayList<TimerRecord> timerRecords , TimerRecord  currentRecord){
+        Log.d("ARRAY" , "before "+ timerRecords.toString());
         RecordManager.removeById(timerRecords , currentRecord.getId());
         if(timerRecords.size()>0){
             timerRecords.get(timerRecords.size()-1).setPriorToShow(true);
         }
+        Log.d("ARRAY" , "after "+timerRecords.toString());
         RecordManager.updateRecordsInSharedPreferences(sharedPreferences , timerRecords);
     }
 

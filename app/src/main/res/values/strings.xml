@@ -36,23 +36,28 @@
 
     <!-- Main Screen -->
     <string name="add_new_entry">Add New</string>
-    <string name="set_as_wallpaper">Set As Wallaper</string>
+    <string name="set_as_wallpaper">Set As Wallpaper</string>
     <string name="list_of_timers">List</string>
     <string name="timer_settings">Preferences</string>
     <string name="delete_timer">Delete</string>
     <string name="delete_done">Deleted Successfully</string>
     <string name="no_record_to_delete">No record to delete</string>
 
-    <string name="preference_category">A fucking title</string>
-    <string name="year" >Year</string>
-    <string name="month" >Month</string>
-    <string name="day" >Day</string>
-    <string name="hour" >Hour</string>
-    <string name="minute" >Minute</string>
-    <string name="second" >Second</string>
+    <!-- Preferences screen-->
+    <string name="preference_category">Timer Settings</string>
 
+    <!-- Timer unit values -->
+    <string name="year">Year</string>
+    <string name="month">Month</string>
+    <string name="day">Day</string>
+    <string name="hour">Hour</string>
+    <string name="minute">Minute</string>
+    <string name="second">Second</string>
 
-
+    <!-- List menu title-->
+    <string name="timers_list_title">Timers</string>
+    <string name="edit_count_down">Edit Count Down</string>
+    <string name="preview">Text Color</string>
 
 
 </resources>

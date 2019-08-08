@@ -5,7 +5,7 @@
     android:id="@+id/fragmentFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_rectangle"
+    android:background="@drawable/gradient_rectangle_green"
     tools:context=".fragments.CountDownDisplayFragment">
 
 
@@ -20,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/surfaceView"
+
         />
 
 

@@ -14,6 +14,7 @@
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="CustomDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
         <!--buttons color-->
         <item name="colorAccent">@color/white</item>
@@ -22,6 +23,12 @@
         <!--dialog background-->
         <item name="android:windowBackground">@color/spotifyGreen</item>
     </style>
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ListFont" parent="@android:style/Widget.ListView">
+        <item name="android:color">#FFFFFF</item>
+        <item name="android:typeface">sans</item>
+    </style>
 
 </resources>

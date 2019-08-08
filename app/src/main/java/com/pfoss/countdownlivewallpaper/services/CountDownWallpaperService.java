@@ -1,12 +1,17 @@
 package com.pfoss.countdownlivewallpaper.services;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
+import androidx.transition.Transition;
+
 import com.pfoss.countdownlivewallpaper.CountDownDrawer;
+import com.pfoss.countdownlivewallpaper.activities.MainActivity;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.utils.RecordManager;
 
@@ -26,7 +31,7 @@ public class CountDownWallpaperService extends WallpaperService {
         timersSharedPreferences = getSharedPreferences("com.pfoss.countdownlivewallpaper", MODE_PRIVATE);
         timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
         currentRecord = RecordManager.getPriorToShowRecord(timerRecords);
-        drawer = new CountDownDrawer(handler, this, currentRecord);
+        drawer = new CountDownDrawer(handler, this, currentRecord );
         return new SimpleWallpaperEngine();
     }
 

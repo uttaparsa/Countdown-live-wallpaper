@@ -15,7 +15,9 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            debuggable true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
         }
     }
 }
@@ -32,4 +34,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.nightonke:boommenu:2.1.1'
     implementation 'com.github.yukuku:ambilwarna:2.0.1'
+    implementation 'androidx.cardview:cardview:1.0.0'
+
 }

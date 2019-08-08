@@ -4,12 +4,13 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.pfoss.countdownlivewallpaper.R;
 
-public class TimerSettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +24,7 @@ public class TimerSettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+//        initializeToolbar();
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
@@ -32,4 +34,12 @@ public class TimerSettingsActivity extends AppCompatActivity {
 
         }
     }
+//    private void initializeToolbar() {
+//        Toolbar toolbar;
+//        toolbar = findViewById(R.id.toolbar);
+//        toolbar.setTitle(getResources().getString(R.string.timers_list_title));
+////        toolbar.setBackgroundColor();
+//        setSupportActionBar(toolbar);
+//
+//    }
 }

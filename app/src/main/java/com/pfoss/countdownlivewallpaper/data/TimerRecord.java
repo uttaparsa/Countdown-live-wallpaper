@@ -3,6 +3,7 @@ package com.pfoss.countdownlivewallpaper.data;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,22 +19,33 @@ public class TimerRecord implements Serializable {
     private String imagePath;
     private UUID id;
     private BackgroundTheme backgroundTheme;
-    private int Color;
+    private int backGroundColor;
+    private int textColor;
     public TimerRecord() {
         this.id = UUID.randomUUID();
         this.label = "Label";
+        this.setBackGroundColor(android.graphics.Color.BLACK);
+        this.setTextColor(Color.WHITE);
     }
 
-    public int getColor() {
-        return Color;
+    public int getBackGroundColor() {
+        return backGroundColor;
     }
 
-    public void setColor(int color) {
-        Color = color;
+    public void setBackGroundColor(int color) {
+        this.backGroundColor = color;
     }
 
     public Date getDate() {
         return date;
+    }
+
+    public int getTextColor() {
+        return textColor;
+    }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
     }
 
     public void setDate(Date date) {
@@ -84,9 +96,8 @@ public class TimerRecord implements Serializable {
 
     @Override
     public String toString() {
-        return "  label: " + label
-                + " date: " + date
-                + "bitmapBase64: " + imagePath;
+        return label;
+
     }
 
     public BackgroundTheme getBackgroundTheme() {

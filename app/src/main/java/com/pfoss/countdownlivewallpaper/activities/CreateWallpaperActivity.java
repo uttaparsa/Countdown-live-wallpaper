@@ -19,6 +19,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
@@ -64,7 +65,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.wallpaper_create_activity);
+        setContentView(R.layout.create_wallpaper_activity);
 
         createInstanceOfViews();
         timerRecord = new TimerRecord();
@@ -108,14 +109,14 @@ public class CreateWallpaperActivity extends AppCompatActivity
         Log.i("CREATE-TIMESET", "This is in order: " + yearFinal + " " + monthFinal + " " + dayFinal + " " + hourFinal + " " + minuteFinal + " ");
     }
 
-    protected void createNewTimerClickable(View view) {
+    public void createNewTimerClickable(View view) {
         if (hasUserSetDateAndTime) {
             initializeRecordObject(timerRecord);
-            saveRecord(timerRecord);
+            saveNewRecord(timerRecord);
             Log.i("SAVE", "new record has been saved");
-            Intent createIntent = new Intent(this, MainActivity.class);
-            createIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(createIntent);
+            Intent createCountdownIntent = new Intent(this, MainActivity.class);
+            createCountdownIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(createCountdownIntent);
             this.finish();
         } else {
             Toast.makeText(this, this.getString(R.string.toast_date_not_set), Toast.LENGTH_SHORT).show();
@@ -127,12 +128,11 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
         timerRecord.setPriorToShow(true);
         timerRecord.setDate(new Date(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal, secondFinal));
-
         timerRecord.setLabel(labelEditText.getText().toString());
     }
 
 
-    private void saveRecord(TimerRecord newRecord) {
+    private void saveNewRecord(TimerRecord newRecord) {
         timersSharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
         ArrayList<TimerRecord> newTimerRecords = RecordManager.fetchRecords(timersSharedPreferences);
         RecordManager.setAllElementsFlagToFalse(newTimerRecords);
@@ -141,7 +141,8 @@ public class CreateWallpaperActivity extends AppCompatActivity
     }
 
 
-    protected void chooseImageClickable(final View view) {
+    public void chooseBackgroundClickable( View view) {
+        final View passView = view;
         String[] themeChoiceItems = getResources().getStringArray(R.array._choose_timer_theme_dialog_multi_choice_array);
         itemSelected = 0;
         new AlertDialog.Builder(this, R.style.CustomDialogTheme)
@@ -159,7 +160,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
                                 startActivityForResult(imagePickIntent, 1);
                                 break;
                             case SOLID_BACKGROUND:
-                                AmbilWarnaDialog dialog = new AmbilWarnaDialog(view.getContext(), R.attr.colorPrimary, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                                AmbilWarnaDialog dialog = new AmbilWarnaDialog(passView.getContext(), R.attr.colorPrimary, new AmbilWarnaDialog.OnAmbilWarnaListener() {
                                     @Override
                                     public void onOk(AmbilWarnaDialog dialog, int color) {
                                         // color is the color selected by the user.
@@ -205,7 +206,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
                                         Log.d("CREATE-OK", "theme was set to solid");
                                         changePreviewToSolidPreview();
-                                        timerRecord.setColor(userSelectedColor);
+                                        timerRecord.setBackGroundColor(userSelectedColor);
                                         timerRecord.setBackgroundTheme(TimerRecord.BackgroundTheme.SOLID);
 
                                         break;
@@ -233,7 +234,8 @@ public class CreateWallpaperActivity extends AppCompatActivity
         DisplayMetrics metrics = getResources().getDisplayMetrics();
 
         int screenWidth = metrics.widthPixels;
-        int screenHeight = metrics.heightPixels;
+        int screenHeight = metrics.heightPixels + getNavigationBarHeight();
+        Log.d("CREATE" , "screen height is :" + screenHeight + " screen width is " + screenWidth);
 
         Bitmap scaledBitmap = BitmapHelper.scaleImageCenteredCrop(userSelectedBitmap, screenHeight, screenWidth);
         backgroundImagePreview.setImageBitmap(scaledBitmap);
@@ -261,7 +263,22 @@ public class CreateWallpaperActivity extends AppCompatActivity
         }
     }
 
-    public void goBack(View view) {
+    public void goBackClickableDrawable(View view) {
         this.onBackPressed();
     }
+    private int getNavigationBarHeight() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int usableHeight = metrics.heightPixels;
+            getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+            int realHeight = metrics.heightPixels;
+            if (realHeight > usableHeight)
+                return realHeight - usableHeight;
+            else
+                return 0;
+        }
+        return 0;
+    }
+
 }

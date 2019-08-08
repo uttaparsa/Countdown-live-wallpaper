@@ -19,7 +19,9 @@
     <item android:title="@string/delete_timer"
         android:id="@+id/deleteTimer"
         android:orderInCategory="10"/>
-
+    <item android:title="@string/edit_count_down"
+        android:id="@+id/editCountDown"
+        android:orderInCategory="11"/>
 
 
 </menu>

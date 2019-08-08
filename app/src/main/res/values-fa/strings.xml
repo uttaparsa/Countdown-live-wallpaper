@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">شمارش معکوس</string>
+    <string name="change_lang_button">زبان</string>
+    <string name="title_activity_settings">تنظیمات</string>
+    <string name="change_language_title">انتخاب زبان</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">پیام ها</string>
+
+
+    <!-- Messages Preferences -->
+    <string name="wallpaper_description">Count down wallpaper xml layout</string>
+
+    <!-- Create Timer -->
+    <string name="label_select_timer">نام</string>
+    <string name="create_new_button">بساز</string>
+    <string name="countdown_name">نام تایمر</string>
+    <string name="set_date_and_time_button">انتخاب تاریخ و ساعت</string>
+    <string name="background_image_of_timer">تصویر پس زمینه تایمر</string>
+    <string name="toast_date_not_set">اپتدا باید تاریخ را تنظیم کنید</string>
+
+    <string name="gradient_theme_option">رنگین کمان</string>
+    <string name="image_theme_option">تصویر</string>
+    <string name="solid_color_theme_option">رنگ</string>
+    <string name="choose_theme_dialog_title">انتخاب پوسته</string>
+
+
+    <!-- Set as wallpaper error toast -->
+    <string name="no_timer_yet">اپتدا باید یک تایمر ایجاد کنید</string>
+
+    <!-- Timer UI -->
+    <string name="hour_text">ساعت</string>
+    <string name="day_text">روز</string>
+    <string name="minute_text">دقیقه</string>
+    <string name="second_text">ثانیه</string>
+
+    <!-- Main Screen -->
+    <string name="add_new_entry">تایمر جدید</string>
+    <string name="set_as_wallpaper">انتخاب به عنوان تصویر زمینه زنده</string>
+    <string name="list_of_timers">تایمرها</string>
+    <string name="timer_settings">تنظیمات تایمر</string>
+    <string name="delete_timer">حذف</string>
+    <string name="delete_done">حذف انجام شد</string>
+    <string name="no_record_to_delete">هیچ تایمری برای حذف وجود ندارد</string>
+
+    <!-- Preferences screen-->
+    <string name="preference_category">تنظیمات تایمر</string>
+
+    <!-- Timer unit values -->
+    <string name="year" >Year</string>
+    <string name="month" >Month</string>
+    <string name="day" >Day</string>
+    <string name="hour" >Hour</string>
+    <string name="minute" >Minute</string>
+    <string name="second" >Second</string>
+
+    <!-- List menu title-->
+    <string name="timers_list_title">تایمر ها</string>
+    <string name="preview">Preview</string>
+
+</resources>
