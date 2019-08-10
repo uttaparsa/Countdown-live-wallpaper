@@ -39,24 +39,30 @@
     <string name="add_new_entry">تایمر جدید</string>
     <string name="set_as_wallpaper">انتخاب به عنوان تصویر زمینه زنده</string>
     <string name="list_of_timers">تایمرها</string>
-    <string name="timer_settings">تنظیمات تایمر</string>
+    <string name="timer_settings">تنظیمات</string>
     <string name="delete_timer">حذف</string>
     <string name="delete_done">حذف انجام شد</string>
     <string name="no_record_to_delete">هیچ تایمری برای حذف وجود ندارد</string>
 
     <!-- Preferences screen-->
     <string name="preference_category">تنظیمات تایمر</string>
+    <string name="multi_select_list_preferences">انتخاب واحد نمایش</string>
 
     <!-- Timer unit values -->
-    <string name="year" >Year</string>
-    <string name="month" >Month</string>
-    <string name="day" >Day</string>
-    <string name="hour" >Hour</string>
-    <string name="minute" >Minute</string>
-    <string name="second" >Second</string>
+    <string name="year" >سال</string>
+    <string name="month" >ماه</string>
+    <string name="day" >روز</string>
+    <string name="hour" >ساعت</string>
+    <string name="minute" >دقیقه</string>
+    <string name="second" >ثانیه</string>
 
     <!-- List menu title-->
     <string name="timers_list_title">تایمر ها</string>
-    <string name="preview">Preview</string>
+    <string name="preview">رنگ متن</string>
+    <string name="edit_count_down">ویرایش</string>
+    <string name="toast_background_not_set">اپتدا باید تصویر زمینه انتخاب کنید</string>
+    <string name="cancel">لغو</string>
+    <string name="ok">تایید</string>
+    <string name="change_background">تغییر پس زمینه</string>
 
 </resources>

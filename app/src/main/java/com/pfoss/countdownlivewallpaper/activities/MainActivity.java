@@ -4,12 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,14 +31,16 @@ import com.nightonke.boommenu.Piece.PiecePlaceEnum;
 import com.pfoss.countdownlivewallpaper.fragments.CountDownDisplayFragment;
 import com.pfoss.countdownlivewallpaper.services.CountDownWallpaperService;
 import com.pfoss.countdownlivewallpaper.R;
-import com.pfoss.countdownlivewallpaper.utils.RecordManager;
+
+import java.util.Locale;
 
 
-public class MainActivity extends AppCompatActivity implements CountDownDisplayFragment.Callbacks {
+public class MainActivity extends AppCompatActivity  {
 
     private CountDownDisplayFragment countDownDisplayFragment;
     private BoomMenuButton boomMenuButton;
     private Toolbar toolbar;
+    boolean isPersian = Locale.getDefault().getLanguage().equals(new Locale("fa").getLanguage());
 
     private static final boolean AUTO_HIDE = true;
 
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements CountDownDisplayF
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,14 +145,24 @@ public class MainActivity extends AppCompatActivity implements CountDownDisplayF
         countDownDisplayFragment.drawTimer(timerToShowIndex);
         Log.d("MAIN", "running request");
     }
+
     private void buildHamButtons() {
         boomMenuButton.setButtonEnum(ButtonEnum.Ham);
         boomMenuButton.setPiecePlaceEnum(PiecePlaceEnum.HAM_2);
         boomMenuButton.setButtonPlaceEnum(ButtonPlaceEnum.HAM_2);
 
         for (int i = 0; i < boomMenuButton.getPiecePlaceEnum().pieceNumber(); i++) {
+            Typeface persianTypeFace  = ResourcesCompat.getFont(this,R.font.vazir_medium);
+            Typeface latinTypeFace  = ResourcesCompat.getFont(this,R.font.baumans);
+            Typeface typeface ;
+            if(isPersian){
+                typeface = persianTypeFace;
+            }
+            else{
+                typeface = latinTypeFace;
+            }
             if (i == 0) {// it's just the way boom works!
-                HamButton.Builder builder = new HamButton.Builder().normalText(getResources().getString(R.string.add_new_entry)).listener(new OnBMClickListener() {
+                HamButton.Builder builder = new HamButton.Builder().normalText(getResources().getString(R.string.add_new_entry)).typeface(typeface).listener(new OnBMClickListener() {
                     @Override
                     public void onBoomButtonClick(int index) {
                         startActivity(new Intent(MainActivity.this, CreateWallpaperActivity.class));
@@ -155,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements CountDownDisplayF
                 });
                 boomMenuButton.addBuilder(builder);
             } else if (i == 1) {
-                HamButton.Builder builder = new HamButton.Builder().normalText(getResources().getString(R.string.set_as_wallpaper)).listener(new OnBMClickListener() {
+                HamButton.Builder builder = new HamButton.Builder().normalText(getResources().getString(R.string.set_as_wallpaper)).typeface(typeface).listener(new OnBMClickListener() {
                     @Override
                     public void onBoomButtonClick(int index) {
                         if (countDownDisplayFragment.getTimerRecords().isEmpty()) {
@@ -214,8 +229,13 @@ public class MainActivity extends AppCompatActivity implements CountDownDisplayF
                 break;
             case R.id.editCountDown:
                 Intent countDownEditIntent = new Intent(this, EditCountDownActivity.class);
-                countDownDisplayFragment.stopDrawing();
-                startActivityForResult(countDownEditIntent, 10);
+                try {
+                    countDownDisplayFragment.getDrawer().stop();
+                    startActivityForResult(countDownEditIntent, 10);
+                }catch (NullPointerException ex){
+                    Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.no_timer_yet), Toast.LENGTH_SHORT).show();
+                }
+
                 break;
             default:
                 return false;
@@ -223,14 +243,14 @@ public class MainActivity extends AppCompatActivity implements CountDownDisplayF
         return false;
     }
 
-    @Override
-    public void reloadFragment() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.surfaceFragment, new CountDownDisplayFragment())
-                .commit();
-        countDownDisplayFragment = (CountDownDisplayFragment) getSupportFragmentManager().findFragmentById(R.id.surfaceFragment);
-        Log.d("MAIN" , "actually replacing the fragment");
-    }
+//    @Override
+//    public void reloadFragment() {
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.surfaceFragment, new CountDownDisplayFragment())
+//                .commit();
+//        countDownDisplayFragment = (CountDownDisplayFragment) getSupportFragmentManager().findFragmentById(R.id.surfaceFragment);
+//        Log.d("MAIN" , "actually replacing the fragment");
+//    }
 
 
     @Override

@@ -58,6 +58,11 @@
     <string name="timers_list_title">Timers</string>
     <string name="edit_count_down">Edit Count Down</string>
     <string name="preview">Text Color</string>
+    <string name="toast_background_not_set">Select Backgound First</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="multi_select_list_preferences">Choose Unit</string>
+    <string name="change_background">Change Background</string>
 
 
 </resources>

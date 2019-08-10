@@ -69,7 +69,6 @@
             android:background="@drawable/button_selector"
             android:color="@android:color/black"
             android:elevation="10dp"
-            android:fontFamily="sans-serif-medium"
             android:padding="10dp"
             android:text="@string/set_date_and_time_button" />
 
@@ -82,7 +81,6 @@
             android:background="@drawable/button_selector"
             android:color="@android:color/black"
             android:elevation="10dp"
-            android:fontFamily="sans-serif-medium"
             android:onClick="createNewTimerClickable"
             android:text="@string/create_new_button" />
 

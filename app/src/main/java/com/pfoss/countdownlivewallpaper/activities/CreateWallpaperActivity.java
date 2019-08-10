@@ -3,7 +3,9 @@ package com.pfoss.countdownlivewallpaper.activities;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 
@@ -16,6 +18,7 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -47,25 +50,26 @@ public class CreateWallpaperActivity extends AppCompatActivity
         implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     int day, month, year, hour, minute, second;
     int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal, secondFinal;
-    EditText labelEditText;
-    Bitmap userSelectedBitmap;
-    int userSelectedColor;
-    Button dateSetButton;
-    Button createButton;
-    ImageView backgroundImagePreview;
-    boolean hasUserSetDateAndTime = false;
-    DatePickerDialog datePickerDialog;
-    SharedPreferences timersSharedPreferences;
-    TimerRecord timerRecord;
-    int itemSelected;
-    private static final int GRADIENT_BACKGROUND = 0;
-    private static final int IMAGE_BACKGROUND = 1;
-    private static final int SOLID_BACKGROUND = 2;
+    private EditText labelEditText;
+    private Bitmap userSelectedBitmap;
+    private int userSelectedColor;
+    private Button dateSetButton;
+    private Button createButton;
+    private ImageView backgroundImagePreview;
+    private boolean hasUserSetDateAndTime = false;
+    private boolean hasUserSetBackground = false;
+    private DatePickerDialog datePickerDialog;
+    private SharedPreferences timersSharedPreferences;
+    private TimerRecord timerRecord;
+    private int itemSelected;
+    public static final int GRADIENT_BACKGROUND = 0;
+    public static final int IMAGE_BACKGROUND = 1;
+    public static final int SOLID_BACKGROUND = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.create_wallpaper_activity);
+        setContentView(R.layout.activity_create_wallpaper);
 
         createInstanceOfViews();
         timerRecord = new TimerRecord();
@@ -101,6 +105,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
         timePickerDialog.show();
     }
 
+
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         hourFinal = i;
@@ -110,7 +115,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
     }
 
     public void createNewTimerClickable(View view) {
-        if (hasUserSetDateAndTime) {
+        if (hasUserSetDateAndTime && hasUserSetBackground) {
             initializeRecordObject(timerRecord);
             saveNewRecord(timerRecord);
             Log.i("SAVE", "new record has been saved");
@@ -118,8 +123,10 @@ public class CreateWallpaperActivity extends AppCompatActivity
             createCountdownIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(createCountdownIntent);
             this.finish();
-        } else {
+        } else if(!hasUserSetDateAndTime){
             Toast.makeText(this, this.getString(R.string.toast_date_not_set), Toast.LENGTH_SHORT).show();
+        }else if(!hasUserSetBackground){
+            Toast.makeText(this, this.getString(R.string.toast_background_not_set), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -145,6 +152,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
         final View passView = view;
         String[] themeChoiceItems = getResources().getStringArray(R.array._choose_timer_theme_dialog_multi_choice_array);
         itemSelected = 0;
+
         new AlertDialog.Builder(this, R.style.CustomDialogTheme)
                 .setTitle(getResources().getString(R.string.choose_theme_dialog_title))
                 .setSingleChoiceItems(themeChoiceItems, itemSelected, new DialogInterface.OnClickListener() {
@@ -156,6 +164,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
                                 break;
                             case IMAGE_BACKGROUND:
+
                                 Intent imagePickIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                                 startActivityForResult(imagePickIntent, 1);
                                 break;
@@ -183,10 +192,11 @@ public class CreateWallpaperActivity extends AppCompatActivity
                 })
                 .
 
-                        setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 Log.d("CREATE-OK", "item-selected is :" + itemSelected);
+                                hasUserSetBackground = true;
                                 switch (itemSelected) {
                                     case GRADIENT_BACKGROUND:
 
@@ -218,7 +228,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
                         })
                 .
 
-                        setNegativeButton("Cancel", null)
+                        setNegativeButton(getResources().getString(R.string.cancel), null)
                 .
 
                         show();

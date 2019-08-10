@@ -52,7 +52,35 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_begin="20dp"
             app:layout_constraintGuide_percent="0.2" />
+        <FrameLayout
+            android:id="@+id/backgroundPreview"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@android:color/transparent"
+            android:onClick="setBackgroundClickable"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/backgroundPreviewText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/change_background"
+                android:textColor="@android:color/black"
+                android:textSize="30sp" />
+        </FrameLayout>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="20dp"
+            app:layout_constraintGuide_percent="0.4" />
     </LinearLayout>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

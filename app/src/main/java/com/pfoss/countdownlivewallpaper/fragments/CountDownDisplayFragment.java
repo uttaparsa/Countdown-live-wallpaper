@@ -1,16 +1,13 @@
 package com.pfoss.countdownlivewallpaper.fragments;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -22,7 +19,6 @@ import android.widget.Toast;
 
 import com.pfoss.countdownlivewallpaper.CountDownDrawer;
 import com.pfoss.countdownlivewallpaper.R;
-import com.pfoss.countdownlivewallpaper.activities.MainActivity;
 import com.pfoss.countdownlivewallpaper.utils.RecordManager;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 
@@ -39,8 +35,8 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     private CountDownDrawer drawer;
     private boolean visible = true;
     private SurfaceView surfaceView;
-    private Handler handler ;
     private ImageView noTimerFoundImageView;
+    private static final String TAG = "displayFragment";
 
     public CountDownDisplayFragment() {
         // Required empty public constructor
@@ -51,7 +47,25 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadRecords();
+        drawer = new CountDownDrawer(getContext());
         Log.d("DISPLAY", "onCreate");
+    }
+
+    private void showSurface() {
+        if (!timerRecords.isEmpty()) {//TODO : THIS PIECE OF CODE SHOULD BE IN FUNCTION
+            startDrawer();
+            Log.d(TAG, "records weren't empty ,starting drawer");
+        } else {
+            noTimerFoundImageView.setVisibility(View.VISIBLE);
+            surfaceView.setVisibility(View.INVISIBLE);
+            Log.d(TAG, "records were empty , showing empty image view");
+        }
+    }
+
+    private void startDrawer() {
+        drawer.setCurrentRecord(currentRecord);
+        drawer.initRunnable();
+        drawer.start();
     }
 
     @Override
@@ -69,6 +83,7 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
 
         surfaceView = view.findViewById(R.id.surfaceView);
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
+        drawer.setHolder(surfaceHolder);
         surfaceHolder.addCallback(this);//don't know what it does
         noTimerFoundImageView = view.findViewById(R.id.noTimerFound);
         Log.d("DISPLAY", "onCreateView");
@@ -84,16 +99,10 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         if (!timerRecords.isEmpty()) {
-            handler = new Handler();
-            visible = true;
-            drawer = new CountDownDrawer(handler, getActivity(), currentRecord);
-            drawer.initRunnable(surfaceHolder, visible);
-            drawer.start();
-            Log.d("DISPLAY-SURFACE", "records weren't empty ,starting drawer");
+            showSurface();
         } else {
             noTimerFoundImageView.setVisibility(View.VISIBLE);
             surfaceView.setVisibility(View.INVISIBLE);
-            Log.d("DISPLAY-SURFACE", "records were empty , showing empty image view");
         }
         Log.d("DISPLAY", "surfaceCreated");
     }
@@ -101,10 +110,6 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
         Log.d("DISPLAY", "surfaceChanged");
-    }
-
-    public TimerRecord getCurrentRecord() {
-        return currentRecord;
     }
 
     @Override
@@ -121,73 +126,61 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
         timersSharedPreferences = this.getActivity().getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
         timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
         currentRecord = RecordManager.getPriorToShowRecord(timerRecords);
-        Log.d("DISPLAY" , " reloading records");
+        Log.d(TAG, " reloading records");
     }
 
 
-    public void deleteTimer() {
+    public void deleteTimer() {//TODO : better be short method
         if (timerRecords.isEmpty()) {
-            Log.d("DISPLAY", "No record to delete");
+            Log.d(TAG, "No record to delete");
             Toast.makeText(getContext(),
                     getActivity().getResources().getString(R.string.no_record_to_delete),
                     Toast.LENGTH_SHORT)
                     .show();
         } else {
-            Log.d("DISPLAY", "Deleting a record");
+            Log.d(TAG, "Deleting a record");
             Toast.makeText(getContext(),
                     currentRecord.getLabel() + " " + getActivity().getResources().getString(R.string.delete_done),
                     Toast.LENGTH_SHORT)
                     .show();
             drawer.stop();
-            Log.d("DELETE" , "deleting : "+currentRecord);
             RecordManager.deleteRecord(timersSharedPreferences, timerRecords, currentRecord);
-
-//            ((MainActivity) getActivity()).reloadFragment();
             loadRecords();
-            Log.d("DELETE" , "after delete , current record is: : "+currentRecord);
-//            reloadHere();
+            if (!timerRecords.isEmpty()) {
+                startDrawer();
+                Log.d(TAG, "records weren't empty ,starting drawer");
+            } else {
+                noTimerFoundImageView.setVisibility(View.VISIBLE);
+                surfaceView.setVisibility(View.INVISIBLE);
+                Log.d("DISPLAY-SURFACE", "records were empty , showing empty image view");
+            }
+
 
         }
-    }
 
-    public void stopDrawing() {
-        drawer.stop();
-
-    }
-    void reloadHere(){
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.detach(this).attach(new CountDownDisplayFragment()).commit();
     }
 
     public void drawTimer(int index) {
         if (index < timerRecords.size()) {
+            try {
+                drawer.stop();
+            }catch (NullPointerException ex){
+                Log.d(TAG, "drawTimer: no drawer found but it's ok :)");
+            }
+
             RecordManager.setAllElementsFlagToFalse(timerRecords);
             timerRecords.get(index).setPriorToShow(true);
             RecordManager.updateRecordsInSharedPreferences(timersSharedPreferences, timerRecords);
-            mCallbacks.reloadFragment();
-
+            loadRecords();
+            startDrawer();
             Log.d("DISPLAY", "called drawTimer ");
         } else {
             throw new ArrayIndexOutOfBoundsException();
         }
-
     }
 
-    private Callbacks mCallbacks;
-
-
-    public interface Callbacks {
-        //Callback for when button clicked.
-        void reloadFragment();
-    }
-
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        // Activities containing this fragment must implement its callbacks
-        mCallbacks = (Callbacks) activity;
-
+    public CountDownDrawer getDrawer() {
+        return drawer;
     }
 
     public ArrayList<TimerRecord> getTimerRecords() {

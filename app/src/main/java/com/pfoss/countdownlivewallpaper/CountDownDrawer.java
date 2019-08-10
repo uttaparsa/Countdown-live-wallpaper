@@ -24,15 +24,16 @@ import com.pfoss.countdownlivewallpaper.utils.UnitType;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 
 public class CountDownDrawer {
-
+    private static final String TAG = "CountDownDrawer";
     private Canvas canvas;
     private Handler handler;
     private Context context;
     private TimerRecord currentRecord;
-    private SurfaceHolder surfaceHolder;
+    private SurfaceHolder holder;
     private boolean visible;
     private Gradient gradient;
     private static int FPS = 1;
@@ -43,23 +44,35 @@ public class CountDownDrawer {
     private Paint labelStyle;
     private TextStyle textStyle;
     private int navbarSize;
+    boolean isPersian = Locale.getDefault().getLanguage().equals(new Locale("fa").getLanguage());
 
     int screenWidthInPixels;
     int screenHeightInPixels;
 
-    public CountDownDrawer(Handler handler, Context context, TimerRecord currentRecord) {
-        this.handler = handler;
+    public CountDownDrawer(Context context, TimerRecord currentRecord ) {
         this.context = context;
-        this.currentRecord = currentRecord;
         activeTimeUnitsArray = PreferenceHelper.fetchPreferences(context);
-        Log.i("DRAWER-CONSTRUCTOR", "prefs " + activeTimeUnitsArray);
+        Log.i(TAG, "prefs " + activeTimeUnitsArray);
         convertDipToPixel();
+        setCurrentRecord(currentRecord);
+        initRunnable();
+
+    }
+    public CountDownDrawer(Context context) {
+        this.context = context;
+        activeTimeUnitsArray = PreferenceHelper.fetchPreferences(context);
+        Log.i(TAG, "prefs " + activeTimeUnitsArray);
+        convertDipToPixel();
+        initRunnable();
+
+    }
+    public void setCurrentRecord( TimerRecord currentRecord ){
+        this.currentRecord  = currentRecord;
         if (currentRecord.getBackgroundTheme() == TimerRecord.BackgroundTheme.GRADIENT) {
             initGradient();
             FPS = 10;
         }else{FPS = 1;}
         initStyles();
-
     }
 
     private void initStyles() {
@@ -69,16 +82,19 @@ public class CountDownDrawer {
         labelStyle = textStyle.getLabelStyle(labelStyle);
     }
 
-    public void initRunnable(final SurfaceHolder holder, final boolean visible) {
-        this.surfaceHolder = holder;
+    public void initRunnable( ) {
         runnable = new Runnable() {
             @Override
             public void run() {
-                drawPage(surfaceHolder, visible);
+                drawPage();
             }
         };
 
-        Log.i("DRAWER-INITRUNNABLE", "runnable initialized");
+        Log.i(TAG, "runnable initialized");
+    }
+
+    public void setHolder(SurfaceHolder holder) {
+        this.holder = holder;
     }
 
     private void initGradient() {
@@ -88,14 +104,17 @@ public class CountDownDrawer {
                 GRADIENT_END_Y_AXIS,
                 Shader.TileMode.CLAMP);
         gradient.setAntiAlias(true);
-        Log.i("DRAWER-INITGRADIENT", "gradient initialized");
+        Log.i(TAG, "gradient initialized");
     }
 
+
     public void start() {
+        this.visible = true;
+        handler = new Handler();
         handler.post(runnable);
     }
 
-    private void drawPage(SurfaceHolder holder, boolean visible) {
+    private void drawPage() {
         canvas = null;
         try {
             canvas = holder.lockCanvas();
@@ -104,20 +123,20 @@ public class CountDownDrawer {
                 drawBackground();
                 drawNumbers();
                 drawLabel();
-                Log.i("DRAWER", "updating text");
+                Log.i(TAG, "updating text");
 
             }
         } catch (Exception e) {
-            Log.e("DRAWER-DRAWPAGE", "Error While using canvas");
+            Log.e(TAG, "Error While using canvas");
             e.printStackTrace();
         } finally {
             if (canvas != null)
                 holder.unlockCanvasAndPost(canvas);
-            Log.i("RUNNABLE", "unlocked canvas in runnable");
+            Log.i(TAG ,"unlocked canvas in runnable");
         }
         // Schedule the next frame
         handler.removeCallbacks(runnable);
-        if (visible) {//TODO: figure out what this if statement does
+        if (visible) {
             handler.postDelayed(runnable, 1000 / FPS);
         }
 
@@ -128,7 +147,7 @@ public class CountDownDrawer {
     }
 
     private void drawBackground() {
-        Log.d("DRAWER-BACKGROUND", "current record theme: " + currentRecord.getBackgroundTheme());
+        Log.d(TAG, "current record theme: " + currentRecord.getBackgroundTheme());
         switch (currentRecord.getBackgroundTheme()) {
             case GRADIENT:
                 drawGradientBackground(canvas);
@@ -146,7 +165,7 @@ public class CountDownDrawer {
     private void drawNumbers() {
 
         int timerDifferenceInSeconds = getTimeDifferenceInSeconds();
-        Log.d("DRAWER", "difference in seconds is  : " + timerDifferenceInSeconds);
+        Log.d(TAG, "difference in seconds is  : " + timerDifferenceInSeconds);
         for (int i = 0; i < activeTimeUnitsArray.size(); i++) {
             switch (activeTimeUnitsArray.get(i)) {//this is like a converter , a one with dirty code:/
                 case "year":
@@ -193,7 +212,7 @@ public class CountDownDrawer {
                     drawNumber(UnitType.SECOND, timerDifferenceInSeconds, i);
                     break;
                 default:
-                    Log.w("DRAWER", "This the switch case isn't working for a string");
+                    Log.w(TAG, "This the switch case isn't working for a string");
 
             }
         }
@@ -210,33 +229,34 @@ public class CountDownDrawer {
 
 
     private void drawNumber(UnitType unitName, int numberValue, int numberIndex) {
-        int numberYaxis = FIRST_UNIT_Y_AXIS + numberIndex * (SPACE_BETWEEN_UNITS  + (int)((6-activeTimeUnitsArray.size())*SPACE_BETWEEN_UNITS*0.10));
+        int numberYAxis = FIRST_UNIT_Y_AXIS + numberIndex * (SPACE_BETWEEN_UNITS  + (int)((6-activeTimeUnitsArray.size())*SPACE_BETWEEN_UNITS*0.10));
         numbersStyle = textStyle.getNumbersStyle(numbersStyle);
-        Log.d("DRAWER" , " space size is : "+(int)((6-activeTimeUnitsArray.size())*SPACE_BETWEEN_UNITS*0.55));
+        Log.d(TAG , " space size is : "+(int)((6-activeTimeUnitsArray.size())*SPACE_BETWEEN_UNITS*0.55));
         numbersStyle.setTextSize((int)((numbersStyle.getTextSize()*(activeTimeUnitsArray.size()-numberIndex-1))*0.25) + numbersStyle.getTextSize() );
-        canvas.drawText(String.valueOf(numberValue),  NUMBERS_X_AXIS, numberYaxis, numbersStyle);
-        if (numberValue == 1) {
-            drawSingularUnitName(unitName, numberYaxis);
+        canvas.drawText(String.valueOf(numberValue),  NUMBERS_X_AXIS, numberYAxis, numbersStyle);
+
+        if (numberValue == 1 || isPersian) {
+            drawSingularUnitName(unitName, numberYAxis);
         } else {
-            drawPluralUnitName(unitName, numberYaxis);
+            drawPluralUnitName(unitName, numberYAxis);
         }
     }
 
     private void drawSingularUnitName(UnitType unitName, int Yaxis) {
-        canvas.drawText(unitName.toString(), UNITS_X_AXIS, Yaxis, unitsStyle);
+        canvas.drawText(context.getResources().getString(unitName.getStringResource()), UNITS_X_AXIS, Yaxis, unitsStyle);
     }
 
     private void drawPluralUnitName(UnitType unitName, int Yaxis) {
-        canvas.drawText(unitName.toString() + "s", UNITS_X_AXIS, Yaxis, unitsStyle);
+        canvas.drawText(context.getResources().getString(unitName.getStringResource()) + "s", UNITS_X_AXIS, Yaxis, unitsStyle);
     }
 
     private void drawSolidBackground(Canvas canvas) {
         canvas.drawColor(currentRecord.getBackGroundColor());
-        Log.v("DRAWER", "Drawing solid background");
+        Log.v(TAG, "Drawing solid background");
     }
 
     private void drawGradientBackground(Canvas canvas) {
-        Log.v("DRAWER", "Drawing gradient background");
+        Log.v(TAG, "Drawing gradient background");
         canvas.drawRect(new RectF(0, 0, GRADIENT_END_X_AXIS, GRADIENT_END_Y_AXIS), gradient);
         updateGradient(gradient);
 
@@ -245,11 +265,10 @@ public class CountDownDrawer {
     private void updateGradient(Gradient linearGradient) {//TODO: DOES NOT GO THROUGH ALL COLORS
             MyLinearGradient myLinearGradient = ((MyLinearGradient) linearGradient);
             int changeValue = 1;
-            Log.i("DRAWER-COLORCHANGE", "gradient color is : " + myLinearGradient.getStartColor());
+            Log.i(TAG, "gradient color is : " + myLinearGradient.getStartColor());
             myLinearGradient.setStartColor(myLinearGradient.getStartColor() + changeValue);
             myLinearGradient.setEndColor(myLinearGradient.getEndColor() - changeValue );
             myLinearGradient.setAntiAlias(true);
-//            lastGradientUpdateTime = System.currentTimeMillis();
 
     }
 
@@ -261,7 +280,7 @@ public class CountDownDrawer {
         RectF whereToDraw = new RectF(0, 0, screenWidthInPixels, screenHeightInPixels);
 
         canvas.drawBitmap(currentRecord.getBitmap(), frameToDraw, whereToDraw, null);
-        Log.i("DRAWER", "Drawing image background");
+        Log.i(TAG, "Drawing image background");
     }
 
 
@@ -331,18 +350,12 @@ public class CountDownDrawer {
         return FPS;
     }
 
-    public Runnable getRunnable() {
-        return runnable;
-    }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
 
     public void stop() {
-        handler.removeCallbacks(runnable);
         this.visible = false;
-        Log.i("DRAWER-STOP", "called stop function");
+        handler.removeCallbacksAndMessages(null);
+        Log.i(TAG, "called stop function");
     }
 
 

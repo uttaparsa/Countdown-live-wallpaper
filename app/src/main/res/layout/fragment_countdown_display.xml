@@ -16,11 +16,11 @@
         android:layout_gravity="center"
         android:visibility="invisible"
         android:src="@drawable/abstract_page_not_found" />
+
     <SurfaceView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/surfaceView"
-
         />
 
 
