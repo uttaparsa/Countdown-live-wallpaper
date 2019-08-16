@@ -1,24 +1,12 @@
 package com.pfoss.countdownlivewallpaper.activities;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
-import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -36,35 +24,54 @@ import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.pfoss.countdownlivewallpaper.R;
-import com.pfoss.countdownlivewallpaper.utils.RecordManager;
-import com.pfoss.countdownlivewallpaper.data.TimerRecord;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
+import com.mohamadamin.persianmaterialdatetimepicker.time.RadialPickerLayout;
+import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
+import com.pfoss.countdownlivewallpaper.R;
+import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
+import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
+import com.pfoss.countdownlivewallpaper.utils.RecordManager;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 //TODO: this class is messy , must be cleaned
 
 public class CreateWallpaperActivity extends AppCompatActivity
-        implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-    int day, month, year, hour, minute, second;
+        implements DatePickerDialog.OnDateSetListener,
+        TimePickerDialog.OnTimeSetListener,
+        com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog.OnDateSetListener,
+        com.mohamadamin.persianmaterialdatetimepicker.time.TimePickerDialog.OnTimeSetListener {
+
+
+    private static final String TAG = "CreateWallpaperActivity";
     int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal, secondFinal;
     private EditText labelEditText;
     private Bitmap userSelectedBitmap;
     private int userSelectedColor;
     private Button dateSetButton;
-    private Button createButton;
     private ImageView backgroundImagePreview;
     private boolean hasUserSetDateAndTime = false;
     private boolean hasUserSetBackground = false;
-    private DatePickerDialog datePickerDialog;
+
+
     private SharedPreferences timersSharedPreferences;
     private TimerRecord timerRecord;
     private int itemSelected;
     public static final int GRADIENT_BACKGROUND = 0;
     public static final int IMAGE_BACKGROUND = 1;
     public static final int SOLID_BACKGROUND = 2;
+//    boolean isPersian = Locale.getDefault().getLanguage().equals(new Locale("fa").getLanguage());
+    boolean isPersian = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,15 +85,32 @@ public class CreateWallpaperActivity extends AppCompatActivity
             public void onClick(View view) {
                 Log.i("GOT", "date button click");
                 Calendar today = Calendar.getInstance();
-                Log.d("CREATE" , "today DATE: " + today.get(Calendar.YEAR) + " " + today.get(Calendar.MONTH) + " " + today.get(Calendar.DAY_OF_MONTH) );
-                datePickerDialog = new DatePickerDialog(CreateWallpaperActivity.this, CreateWallpaperActivity.this, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH));
-                datePickerDialog.show();
+                if (isPersian) {
+                    PersianCalendar persianCalendar = new PersianCalendar();
+                    com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog persianPickerDialog = com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog.newInstance(
+                            CreateWallpaperActivity.this,
+                            persianCalendar.getPersianYear(),
+                            persianCalendar.getPersianMonth(),
+                            persianCalendar.getPersianDay()
+                    );
+                    persianPickerDialog.show(getFragmentManager(), "persianPickerDialog");
+                } else {
+                    DatePickerDialog datePickerDialog;
+                    datePickerDialog = new DatePickerDialog(CreateWallpaperActivity.this,
+                            CreateWallpaperActivity.this,
+                            today.get(Calendar.YEAR),
+                            today.get(Calendar.MONTH),
+                            today.get(Calendar.DAY_OF_MONTH));
+
+                    datePickerDialog.show();
+                }
+
+
             }
         });
     }
 
     private void createInstanceOfViews() {
-        createButton = (Button) findViewById(R.id.createTimeButton);
         dateSetButton = (Button) findViewById(R.id.setDateAndTimeDialogButton);
         labelEditText = (EditText) findViewById(R.id.labelEditText);
         backgroundImagePreview = (ImageView) findViewById(R.id.backgroundImageView);
@@ -96,12 +120,17 @@ public class CreateWallpaperActivity extends AppCompatActivity
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
         yearFinal = i;
-        monthFinal = i1 + 1;
+        monthFinal = i1;
         dayFinal = i2;
         Calendar newDate = Calendar.getInstance();
-        hour = newDate.get(Calendar.HOUR_OF_DAY);
-        minute = newDate.get(Calendar.MINUTE);
-        TimePickerDialog timePickerDialog = new TimePickerDialog(CreateWallpaperActivity.this, CreateWallpaperActivity.this, hour, minute, DateFormat.is24HourFormat(this));
+        TimePickerDialog timePickerDialog;
+
+        timePickerDialog = new TimePickerDialog(CreateWallpaperActivity.this,
+                CreateWallpaperActivity.this,
+                newDate.get(Calendar.HOUR_OF_DAY),
+                newDate.get(Calendar.MINUTE),
+                DateFormat.is24HourFormat(this));
+
         timePickerDialog.show();
     }
 
@@ -123,18 +152,36 @@ public class CreateWallpaperActivity extends AppCompatActivity
             createCountdownIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(createCountdownIntent);
             this.finish();
-        } else if(!hasUserSetDateAndTime){
+        } else if (!hasUserSetDateAndTime) {
             Toast.makeText(this, this.getString(R.string.toast_date_not_set), Toast.LENGTH_SHORT).show();
-        }else if(!hasUserSetBackground){
+        } else if (!hasUserSetBackground) {
             Toast.makeText(this, this.getString(R.string.toast_background_not_set), Toast.LENGTH_SHORT).show();
         }
 
     }
 
     private void initializeRecordObject(TimerRecord timerRecord) {
-
         timerRecord.setPriorToShow(true);
-        timerRecord.setDate(new Date(yearFinal, monthFinal, dayFinal, hourFinal, minuteFinal, secondFinal));
+        if (isPersian) {
+            PersianCalendar persianCalendar = new PersianCalendar();
+            persianCalendar.setPersianDate(yearFinal , monthFinal  , dayFinal);
+            timerRecord.setDate(persianCalendar.getPersianLongDateAndTime());
+            Log.d(TAG, "initializeRecordObject: persiandate "+timerRecord.getDate());
+        }else {
+            Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+            cal.set(Calendar.YEAR, yearFinal);
+            cal.set(Calendar.MONTH, monthFinal);
+            cal.set(Calendar.DAY_OF_MONTH, dayFinal);
+            cal.set(Calendar.HOUR_OF_DAY, hourFinal);
+            cal.set(Calendar.MINUTE, minuteFinal);
+            cal.set(Calendar.SECOND, secondFinal);
+            cal.set(Calendar.MILLISECOND, 0);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getDefault());
+
+            timerRecord.setDate(sdf.format(cal.getTime()));
+        }
         timerRecord.setLabel(labelEditText.getText().toString());
     }
 
@@ -148,7 +195,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
     }
 
 
-    public void chooseBackgroundClickable( View view) {
+    public void chooseBackgroundClickable(View view) {
         final View passView = view;
         String[] themeChoiceItems = getResources().getStringArray(R.array._choose_timer_theme_dialog_multi_choice_array);
         itemSelected = 0;
@@ -201,7 +248,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
                                     case GRADIENT_BACKGROUND:
 
                                         changePreviewToGradientPreview();
-                                        timerRecord.setBackgroundTheme(TimerRecord.BackgroundTheme.GRADIENT);
+                                        timerRecord.setBackgroundTheme(BackgroundTheme.GRADIENT);
                                         Log.d("CREATE-OK", "theme was set to gradient");
 
                                         break;
@@ -209,7 +256,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
                                         Log.d("CREATE-OK", "theme was set to image");
                                         changePreviewToImagePreviewAndStoreImageFileInMemory();
-                                        timerRecord.setBackgroundTheme(TimerRecord.BackgroundTheme.PICTURE);
+                                        timerRecord.setBackgroundTheme(BackgroundTheme.PICTURE);
 
                                         break;
                                     case SOLID_BACKGROUND:
@@ -217,7 +264,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
                                         Log.d("CREATE-OK", "theme was set to solid");
                                         changePreviewToSolidPreview();
                                         timerRecord.setBackGroundColor(userSelectedColor);
-                                        timerRecord.setBackgroundTheme(TimerRecord.BackgroundTheme.SOLID);
+                                        timerRecord.setBackgroundTheme(BackgroundTheme.SOLID);
 
                                         break;
                                     default:
@@ -245,7 +292,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
         int screenWidth = metrics.widthPixels;
         int screenHeight = metrics.heightPixels + getNavigationBarHeight();
-        Log.d("CREATE" , "screen height is :" + screenHeight + " screen width is " + screenWidth);
+        Log.d("CREATE", "screen height is :" + screenHeight + " screen width is " + screenWidth);
 
         Bitmap scaledBitmap = BitmapHelper.scaleImageCenteredCrop(userSelectedBitmap, screenHeight, screenWidth);
         backgroundImagePreview.setImageBitmap(scaledBitmap);
@@ -276,6 +323,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
     public void goBackClickableDrawable(View view) {
         this.onBackPressed();
     }
+
     private int getNavigationBarHeight() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             DisplayMetrics metrics = new DisplayMetrics();
@@ -291,4 +339,30 @@ public class CreateWallpaperActivity extends AppCompatActivity
         return 0;
     }
 
+
+    @Override
+    public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
+        hourFinal = hourOfDay;
+        minuteFinal = minute;
+        hasUserSetDateAndTime = true;
+        Log.i("CREATE-TIMESET", "This is in order: " + yearFinal + " " + monthFinal + " " + dayFinal + " " + hourFinal + " " + minuteFinal + " ");
+    }
+
+    @Override
+    public void onDateSet(com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        yearFinal = year;
+        monthFinal = monthOfYear;
+        dayFinal = dayOfMonth;
+        com.mohamadamin.persianmaterialdatetimepicker.time.TimePickerDialog persianTimePicker;
+        PersianCalendar now = new PersianCalendar();
+        persianTimePicker = com.mohamadamin.persianmaterialdatetimepicker.time.TimePickerDialog.newInstance(
+                CreateWallpaperActivity.this,
+                now.get(PersianCalendar.HOUR_OF_DAY),
+                now.get(PersianCalendar.MINUTE),
+                DateFormat.is24HourFormat(this));
+
+
+        persianTimePicker.show(getFragmentManager(), "persianTimePicker");
+
+    }
 }

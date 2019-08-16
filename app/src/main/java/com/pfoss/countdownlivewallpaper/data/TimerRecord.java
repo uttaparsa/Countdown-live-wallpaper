@@ -4,28 +4,40 @@ package com.pfoss.countdownlivewallpaper.data;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.Serializable;
-import java.util.Date;
 import java.util.UUID;
 
-public class TimerRecord implements Serializable {
+public class TimerRecord {
     private String label;
     private boolean priorToShow;
-    private Date date;
+    private String date;
     private String imagePath;
-    private UUID id;
+    private String id;
     private BackgroundTheme backgroundTheme;
     private int backGroundColor;
     private int textColor;
+
     public TimerRecord() {
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
+        Log.d("TIMER-RECORD", "TimerRecord:  id to string: " + this.id);
         this.label = "Label";
         this.setBackGroundColor(android.graphics.Color.BLACK);
         this.setTextColor(Color.WHITE);
+    }
+
+    public TimerRecord(String label, String date, String imagePath, int backgroundColor, int textColor, boolean priorToShow, BackgroundTheme backgroundTheme, String id) {
+        this.label = label;
+        this.date = date;
+        this.imagePath = imagePath;
+        this.backGroundColor = backgroundColor;
+        this.textColor = textColor;
+        this.priorToShow = priorToShow;
+        this.backgroundTheme = backgroundTheme;
+        this.id = id;
     }
 
     public int getBackGroundColor() {
@@ -36,7 +48,7 @@ public class TimerRecord implements Serializable {
         this.backGroundColor = color;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
@@ -48,7 +60,7 @@ public class TimerRecord implements Serializable {
         this.textColor = textColor;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -76,6 +88,7 @@ public class TimerRecord implements Serializable {
         this.imagePath = imagePath;
     }
 
+
     public Bitmap getBitmap() {
         Bitmap bitmap = null;
         try {
@@ -90,7 +103,7 @@ public class TimerRecord implements Serializable {
 
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
@@ -108,11 +121,13 @@ public class TimerRecord implements Serializable {
         this.backgroundTheme = backgroundTheme;
     }
 
-    public boolean hasImage() {
-       return  (this.getImagePath() != null);
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public enum BackgroundTheme{
-        GRADIENT , PICTURE , SOLID;
+    public boolean hasImage() {
+        return (this.getImagePath() != null);
     }
+
+
 }

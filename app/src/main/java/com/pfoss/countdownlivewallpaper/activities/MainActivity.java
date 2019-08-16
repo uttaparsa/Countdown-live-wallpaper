@@ -35,7 +35,7 @@ import com.pfoss.countdownlivewallpaper.R;
 import java.util.Locale;
 
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
 
     private CountDownDisplayFragment countDownDisplayFragment;
     private BoomMenuButton boomMenuButton;
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity  {
 
         initializeToolbar();
 
-        //save navber height to memory , will be used in drawer
+        //save navigation bar height to memory , will be used in drawer
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt("navbar_height", getNavigationBarHeight()).apply();
 
         boomMenuButton = findViewById(R.id.boomMenuButton);
@@ -133,10 +133,10 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
-    private void checkBundle(){
+    private void checkBundle() {
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
-            Log.d("MAIN" , "nothing in bundle");
+            Log.d("MAIN", "nothing in bundle");
             return;
 
         }
@@ -152,13 +152,12 @@ public class MainActivity extends AppCompatActivity  {
         boomMenuButton.setButtonPlaceEnum(ButtonPlaceEnum.HAM_2);
 
         for (int i = 0; i < boomMenuButton.getPiecePlaceEnum().pieceNumber(); i++) {
-            Typeface persianTypeFace  = ResourcesCompat.getFont(this,R.font.vazir_medium);
-            Typeface latinTypeFace  = ResourcesCompat.getFont(this,R.font.baumans);
-            Typeface typeface ;
-            if(isPersian){
+            Typeface persianTypeFace = ResourcesCompat.getFont(this, R.font.vazir_medium);
+            Typeface latinTypeFace = ResourcesCompat.getFont(this, R.font.baumans);
+            Typeface typeface;
+            if (isPersian) {
                 typeface = persianTypeFace;
-            }
-            else{
+            } else {
                 typeface = latinTypeFace;
             }
             if (i == 0) {// it's just the way boom works!
@@ -232,25 +231,21 @@ public class MainActivity extends AppCompatActivity  {
                 try {
                     countDownDisplayFragment.getDrawer().stop();
                     startActivityForResult(countDownEditIntent, 10);
-                }catch (NullPointerException ex){
+                } catch (NullPointerException ex) {
                     Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.no_timer_yet), Toast.LENGTH_SHORT).show();
                 }
 
                 break;
+            case R.id.ContactUs:
+                Intent loadContactUS = new Intent(MainActivity.this, CreditsActivity.class);
+                startActivity(loadContactUS);
             default:
                 return false;
         }
         return false;
     }
 
-//    @Override
-//    public void reloadFragment() {
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.surfaceFragment, new CountDownDisplayFragment())
-//                .commit();
-//        countDownDisplayFragment = (CountDownDisplayFragment) getSupportFragmentManager().findFragmentById(R.id.surfaceFragment);
-//        Log.d("MAIN" , "actually replacing the fragment");
-//    }
+
 
 
     @Override

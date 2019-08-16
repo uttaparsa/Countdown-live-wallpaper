@@ -63,6 +63,9 @@
     <string name="ok">OK</string>
     <string name="multi_select_list_preferences">Choose Unit</string>
     <string name="change_background">Change Background</string>
+    <string name="contact_us">Credits</string>
+    <string name="credits_page_title">Credits</string>
+    <string name="thanks_to_credits">Thanks To</string>
 
 
 </resources>

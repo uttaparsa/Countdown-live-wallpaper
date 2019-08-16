@@ -64,5 +64,8 @@
     <string name="cancel">لغو</string>
     <string name="ok">تایید</string>
     <string name="change_background">تغییر پس زمینه</string>
+    <string name="contact_us">تماس با ما</string>
+    <string name="credits_page_title">تماس با ما</string>
+    <string name="thanks_to_credits">با سپاس از</string>
 
 </resources>

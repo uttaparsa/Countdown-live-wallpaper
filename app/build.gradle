@@ -35,5 +35,6 @@ dependencies {
     implementation 'com.nightonke:boommenu:2.1.1'
     implementation 'com.github.yukuku:ambilwarna:2.0.1'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.mohamadamin:persianmaterialdatetimepicker:1.2.1'
 
 }

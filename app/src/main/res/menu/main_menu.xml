@@ -23,5 +23,9 @@
         android:id="@+id/editCountDown"
         android:orderInCategory="11"/>
 
+    <item android:title="@string/contact_us"
+        android:id="@+id/ContactUs"
+        android:orderInCategory="12"/>
+
 
 </menu>

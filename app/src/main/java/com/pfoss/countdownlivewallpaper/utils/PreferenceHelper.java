@@ -18,21 +18,6 @@ public class PreferenceHelper {
             ArrayList<String> unitSelectionArray = new ArrayList<>(unitSelectionsSet);
             ArrayList<String> unitSelectionArraySorted = new ArrayList<>();
 
-//            for (String s : unitSelectionArray) {
-//                if(s.equals("year")){
-//                    unitTypeArrayList.add(UnitType.YEAR);
-//                }else if (s.equals("month")){
-//                    unitTypeArrayList.add(UnitType.MONTH);
-//                }else if (s.equals("day")){
-//                    unitTypeArrayList.add(UnitType.DAY);
-//                }else if (s.equals("hour")){
-//                    unitTypeArrayList.add(UnitType.HOUR);
-//                }else if (s.equals("minute")){
-//                    unitTypeArrayList.add(UnitType.MINUTE);
-//                }else if (s.equals("second")){
-//                    unitTypeArrayList.add(UnitType.SECOND);
-//                }
-//            }
             if (unitSelectionArray.contains("year")) {
                 unitSelectionArraySorted.add("year");
             }

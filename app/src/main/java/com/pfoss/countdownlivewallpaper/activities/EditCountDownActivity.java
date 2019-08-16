@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.pfoss.countdownlivewallpaper.R;
+import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
 import com.pfoss.countdownlivewallpaper.utils.RecordManager;
@@ -146,21 +147,21 @@ public class EditCountDownActivity extends AppCompatActivity {
                                 switch (itemSelected) {
                                     case GRADIENT_BACKGROUND:
 
-                                        currentRecord.setBackgroundTheme(TimerRecord.BackgroundTheme.GRADIENT);
+                                        currentRecord.setBackgroundTheme(BackgroundTheme.GRADIENT);
                                         Log.d("CREATE-OK", "theme was set to gradient");
 
                                         break;
                                     case IMAGE_BACKGROUND:
                                         saveImageFile();
                                         Log.d("CREATE-OK", "theme was set to image");
-                                        currentRecord.setBackgroundTheme(TimerRecord.BackgroundTheme.PICTURE);
+                                        currentRecord.setBackgroundTheme(BackgroundTheme.PICTURE);
 
                                         break;
                                     case SOLID_BACKGROUND:
 
                                         Log.d("CREATE-OK", "theme was set to solid");
                                         currentRecord.setBackGroundColor(userSelectedColor);
-                                        currentRecord.setBackgroundTheme(TimerRecord.BackgroundTheme.SOLID);
+                                        currentRecord.setBackgroundTheme(BackgroundTheme.SOLID);
 
                                         break;
                                     default:

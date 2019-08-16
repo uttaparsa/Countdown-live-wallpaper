@@ -54,11 +54,9 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     private void showSurface() {
         if (!timerRecords.isEmpty()) {//TODO : THIS PIECE OF CODE SHOULD BE IN FUNCTION
             startDrawer();
-            Log.d(TAG, "records weren't empty ,starting drawer");
         } else {
             noTimerFoundImageView.setVisibility(View.VISIBLE);
             surfaceView.setVisibility(View.INVISIBLE);
-            Log.d(TAG, "records were empty , showing empty image view");
         }
     }
 
@@ -72,6 +70,7 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     public void onResume() {
         super.onResume();
         loadRecords();
+        drawer.refreshActiveTimeUnits();
         Log.d("DISPLAY", "onResume");
     }
 
