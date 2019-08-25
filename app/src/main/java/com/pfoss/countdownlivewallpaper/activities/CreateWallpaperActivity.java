@@ -28,6 +28,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.mohamadamin.persianmaterialdatetimepicker.time.RadialPickerLayout;
 import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
 import com.pfoss.countdownlivewallpaper.R;
@@ -80,7 +83,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
         createInstanceOfViews();
         timerRecord = new TimerRecord();
-        dateSetButton.setOnClickListener(new View.OnClickListener() {
+        dateSetButton.setOnClickListener(new View.OnClickListener() {//TODO : change this listener place
             @Override
             public void onClick(View view) {
                 Log.i("GOT", "date button click");
@@ -108,6 +111,30 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
             }
         });
+        if (isFirstRun()) {
+            showIntro();
+        }
+    }
+
+    private boolean isFirstRun() {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
+        if (sharedPreferences.getBoolean("firstrun", true)) {
+            sharedPreferences.edit().putBoolean("firstrun", false).commit();
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+
+    private void showIntro() {
+        new ShowcaseView.Builder(this)
+                .setTarget(new ViewTarget(R.id.backgroundImageView, this))
+                .setContentTitle(getResources().getString(R.string.set_background_intro_showcase_title))
+                .setContentText(getResources().getString(R.string.set_background_intro_showcase))
+                .hideOnTouchOutside()
+                .build()
+                .show();
     }
 
     private void createInstanceOfViews() {
@@ -319,7 +346,12 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
     private void changePreviewToGradientPreview() {
         backgroundImagePreview.setImageBitmap(null);
-        backgroundImagePreview.setBackground(getResources().getDrawable(R.drawable.imageview_background));
+
+        if(Build.VERSION.SDK_INT >= 16) {
+            backgroundImagePreview.setBackground(getResources().getDrawable(R.drawable.imageview_background));
+        } else {
+            backgroundImagePreview.setBackgroundDrawable(getResources().getDrawable(R.drawable.imageview_background));
+        }
     }
 
     @Override

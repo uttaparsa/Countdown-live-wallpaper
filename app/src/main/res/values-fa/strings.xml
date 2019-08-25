@@ -67,5 +67,9 @@
     <string name="contact_us">تماس با ما</string>
     <string name="credits_page_title">تماس با ما</string>
     <string name="thanks_to_credits">با سپاس از</string>
+    <string name="main_intro_showcase">اضافه کردن تایمر جدید</string>
+    <string name="main_intro_showcase_title">خوش آمدید</string>
+    <string name="set_background_intro_showcase">تصویر زمینه را انتخاب کنید</string>
+    <string name="set_background_intro_showcase_title">انتخاب زمینه</string>
 
 </resources>

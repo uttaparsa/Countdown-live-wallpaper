@@ -66,6 +66,10 @@
     <string name="contact_us">Credits</string>
     <string name="credits_page_title">Credits</string>
     <string name="thanks_to_credits">Thanks To</string>
+    <string name="main_intro_showcase">Click this button to add a new count down timer</string>
+    <string name="main_intro_showcase_title">Welcome</string>
+    <string name="set_background_intro_showcase_title">Choose Image</string>
+    <string name="set_background_intro_showcase">Click this image to change background</string>
 
 
 </resources>

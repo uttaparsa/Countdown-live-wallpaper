@@ -10,7 +10,9 @@ import androidx.preference.PreferenceManager;
 import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +24,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.nightonke.boommenu.BoomButtons.ButtonPlaceEnum;
 import com.nightonke.boommenu.BoomButtons.HamButton;
 import com.nightonke.boommenu.BoomButtons.OnBMClickListener;
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         countDownDisplayFragment = (CountDownDisplayFragment) getSupportFragmentManager().findFragmentById(R.id.surfaceFragment);
-        checkBundle();
+        checkBundle();//TODO: what does it mean?
 
         Log.i("MAIN", "creating main");
         mVisible = true;
@@ -125,12 +130,33 @@ public class MainActivity extends AppCompatActivity {
                 toggle();
             }
         });
-
+        if (isFirstRun()) {
+            showIntro();
+        }
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
 //        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
+    }
+
+    private boolean isFirstRun() {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
+        if (sharedPreferences.getBoolean("firstrun", true)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void showIntro() {
+        new ShowcaseView.Builder(this)
+                .setTarget(new ViewTarget(R.id.boomMenuButton, this))
+                .setContentTitle(getResources().getString(R.string.main_intro_showcase_title))
+                .setContentText(getResources().getString(R.string.main_intro_showcase))
+                .hideOnTouchOutside()
+                .build()
+                .show();
     }
 
     private void checkBundle() {
@@ -244,8 +270,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
-
-
 
 
     @Override
