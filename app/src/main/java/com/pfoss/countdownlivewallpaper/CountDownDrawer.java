@@ -170,7 +170,7 @@ public class CountDownDrawer {
     }
 
 
-    private void drawNumbers() {
+    private void drawNumbers() {//TODO:numbers with zero value not shown but distance is calculated
 
         int timerDifferenceInSeconds = getTimeDifferenceInSeconds();
         Log.d(TAG, "difference in seconds is  : " + timerDifferenceInSeconds);

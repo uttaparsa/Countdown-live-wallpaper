@@ -39,6 +39,7 @@ import com.pfoss.countdownlivewallpaper.utils.RecordManager;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -70,8 +71,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
     public static final int GRADIENT_BACKGROUND = 0;
     public static final int IMAGE_BACKGROUND = 1;
     public static final int SOLID_BACKGROUND = 2;
-//    boolean isPersian = Locale.getDefault().getLanguage().equals(new Locale("fa").getLanguage());
-    boolean isPersian = false;
+    boolean isPersian = Locale.getDefault().getLanguage().equals(new Locale("fa").getLanguage());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +118,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
 
     @Override
-    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {//Gregorian calender picker listener
         yearFinal = i;
         monthFinal = i1;
         dayFinal = i2;
@@ -136,7 +136,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
 
     @Override
-    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+    public void onTimeSet(TimePicker timePicker, int i, int i1) {//Gregorian calender picker listener
         hourFinal = i;
         minuteFinal = i1;
         hasUserSetDateAndTime = true;
@@ -148,10 +148,9 @@ public class CreateWallpaperActivity extends AppCompatActivity
             initializeRecordObject(timerRecord);
             saveNewRecord(timerRecord);
             Log.i("SAVE", "new record has been saved");
-            Intent createCountdownIntent = new Intent(this, MainActivity.class);
-            createCountdownIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(createCountdownIntent);
-            this.finish();
+
+            goToMainActivity();
+
         } else if (!hasUserSetDateAndTime) {
             Toast.makeText(this, this.getString(R.string.toast_date_not_set), Toast.LENGTH_SHORT).show();
         } else if (!hasUserSetBackground) {
@@ -160,14 +159,33 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
     }
 
+    private void goToMainActivity() {
+        Intent createCountdownIntent = new Intent(this, MainActivity.class);
+        clearLastActivity(createCountdownIntent);
+        startActivity(createCountdownIntent);
+        this.finish();
+    }
+
+    private void clearLastActivity(Intent intent) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    }
+
     private void initializeRecordObject(TimerRecord timerRecord) {
         timerRecord.setPriorToShow(true);
         if (isPersian) {
             PersianCalendar persianCalendar = new PersianCalendar();
-            persianCalendar.setPersianDate(yearFinal , monthFinal  , dayFinal);
-            timerRecord.setDate(persianCalendar.getPersianLongDateAndTime());
-            Log.d(TAG, "initializeRecordObject: persiandate "+timerRecord.getDate());
-        }else {
+            persianCalendar.setPersianDate(yearFinal, monthFinal, dayFinal);
+
+            Date time = persianCalendar.getTime();
+            time.setHours(hourFinal);
+            time.setMinutes(minuteFinal);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getDefault());
+            timerRecord.setDate(sdf.format(time));
+
+            Log.d(TAG, "initializeRecordObject: persiandate " + timerRecord.getDate());
+        } else {
             Calendar cal = Calendar.getInstance(TimeZone.getDefault());
             cal.set(Calendar.YEAR, yearFinal);
             cal.set(Calendar.MONTH, monthFinal);
@@ -305,7 +323,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {//Image picker activity result
         super.onActivityResult(requestCode, resultCode, data);
 
 
@@ -341,7 +359,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
 
     @Override
-    public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
+    public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {//Persian calender date set listener
         hourFinal = hourOfDay;
         minuteFinal = minute;
         hasUserSetDateAndTime = true;
@@ -349,7 +367,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDateSet(com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+    public void onDateSet(com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {//Persian calender date set listener
         yearFinal = year;
         monthFinal = monthOfYear;
         dayFinal = dayOfMonth;
