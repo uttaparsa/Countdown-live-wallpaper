@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
-
+//some comment
 public class RecordManager {
     private static final String RECORDS = "recordsIDS";
     private static final int LABEL = 0;
