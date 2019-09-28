@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.pfoss.countdownlivewallpaper.data.ActiveShowUnits;
 import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 
@@ -26,7 +27,11 @@ public class RecordManager {
     private static final int PRIOR_TO_SHOW = 5;
     private static final int BACKGROUND_THEME = 6;
     private static final int RECORD_ID = 7;
+    private static final int ACTIVE_SHOW_UNITS = 8;
 
+    public void loadRecords(){
+
+    }
 
     public static void setAllElementsFlagToFalse(ArrayList<TimerRecord> arrayList) {
         for (TimerRecord element : arrayList) {
@@ -61,21 +66,26 @@ public class RecordManager {
         for (int i = 0; i < timerRecords.size(); i++) {
 
             sb.append(timerRecords.get(i).getId()).append(",");
-            sharedPreferences.edit().putString(getMapID(timerRecords.get(i).getId(), LABEL), timerRecords.get(i).getLabel()).apply();
-            sharedPreferences.edit().putString(getMapID(timerRecords.get(i).getId(), DATE), timerRecords.get(i).getDate()).apply();
-            sharedPreferences.edit().putString(getMapID(timerRecords.get(i).getId(), IMAGE_PATH), timerRecords.get(i).getImagePath()).apply();
-            sharedPreferences.edit().putString(getMapID(timerRecords.get(i).getId(), BACKGROUND_COLOR), String.valueOf(timerRecords.get(i).getBackGroundColor())).apply();
-            sharedPreferences.edit().putString(getMapID(timerRecords.get(i).getId(), TEXT_COLOR), String.valueOf(timerRecords.get(i).getTextColor())).apply();
-            sharedPreferences.edit().putString(getMapID(timerRecords.get(i).getId(), PRIOR_TO_SHOW), String.valueOf(timerRecords.get(i).isPriorToShow())).apply();
-            sharedPreferences.edit().putString(getMapID(timerRecords.get(i).getId(), BACKGROUND_THEME), timerRecords.get(i).getBackgroundTheme().toString()).apply();
-            sharedPreferences.edit().putString(getMapID(timerRecords.get(i).getId(), RECORD_ID), timerRecords.get(i).getId()).apply();
+            sharedPreferences.edit().putString(getSaveId(timerRecords.get(i).getId(), LABEL), timerRecords.get(i).getLabel()).apply();
+            sharedPreferences.edit().putString(getSaveId(timerRecords.get(i).getId(), DATE), timerRecords.get(i).getDate()).apply();
+            sharedPreferences.edit().putString(getSaveId(timerRecords.get(i).getId(), IMAGE_PATH), timerRecords.get(i).getImagePath()).apply();
+            sharedPreferences.edit().putString(getSaveId(timerRecords.get(i).getId(), BACKGROUND_COLOR), String.valueOf(timerRecords.get(i).getBackGroundColor())).apply();
+            sharedPreferences.edit().putString(getSaveId(timerRecords.get(i).getId(), TEXT_COLOR), String.valueOf(timerRecords.get(i).getTextColor())).apply();
+            sharedPreferences.edit().putString(getSaveId(timerRecords.get(i).getId(), PRIOR_TO_SHOW), String.valueOf(timerRecords.get(i).isPriorToShow())).apply();
+            sharedPreferences.edit().putString(getSaveId(timerRecords.get(i).getId(), BACKGROUND_THEME), timerRecords.get(i).getBackgroundTheme().toString()).apply();
+            sharedPreferences.edit().putString(getSaveId(timerRecords.get(i).getId(), RECORD_ID), timerRecords.get(i).getId()).apply();
+            saveActiveUnitsArray(sharedPreferences
+                    , timerRecords.get(i).getActiveShowUnits().getActiveShowUnitsBoolArray()
+                    , getSaveId(timerRecords.get(i).getId(), ACTIVE_SHOW_UNITS)
+            );
             Log.d("tagdate", "updateRecordsInSharedPreferences: tagdate to string " + timerRecords.get(i).getDate());
         }
         sharedPreferences.edit().putString(RECORDS, sb.toString()).apply();
 
     }
 
-    private static String getMapID(String id, int name) {
+
+    private static String getSaveId(String id, int name) {
         return id + name;
     }
 
@@ -83,7 +93,7 @@ public class RecordManager {
         ArrayList<TimerRecord> newTimerRecords = new ArrayList<TimerRecord>();
         String recordIds = sharedPreferences.getString(RECORDS, null);
         if ((recordIds == null) ||
-        recordIds.equals("")) return newTimerRecords;
+                recordIds.equals("")) return newTimerRecords;
 
         String[] recordIdArray = recordIds.split(",");
         Log.d(TAG, "fetchRecords: recordIdArray size : " + recordIdArray.length);
@@ -106,43 +116,54 @@ public class RecordManager {
         TimerRecord timerRecord = null;
 
 
-            timerRecord = new TimerRecord(componentsList.get(LABEL),
-                    componentsList.get(DATE),
-                    componentsList.get(IMAGE_PATH),
-                    Integer.valueOf(componentsList.get(BACKGROUND_COLOR)),
-                    Integer.valueOf(componentsList.get(TEXT_COLOR)),
-                    Boolean.valueOf(componentsList.get(PRIOR_TO_SHOW)),
-                    BackgroundTheme.getValueOf(componentsList.get(BACKGROUND_THEME)),
-                    componentsList.get(RECORD_ID));
-            Log.d(TAG, "buildRecordObjectFromID: TRYING");
-
+        timerRecord = new TimerRecord(componentsList.get(LABEL),
+                componentsList.get(DATE),
+                componentsList.get(IMAGE_PATH),
+                Integer.valueOf(componentsList.get(BACKGROUND_COLOR)),
+                Integer.valueOf(componentsList.get(TEXT_COLOR)),
+                Boolean.valueOf(componentsList.get(PRIOR_TO_SHOW)),
+                BackgroundTheme.getValueOf(componentsList.get(BACKGROUND_THEME)),
+                componentsList.get(RECORD_ID),
+                new ActiveShowUnits(loadActiveUnitsArray(getSaveId(id, ACTIVE_SHOW_UNITS) ,sharedPreferences))
+        );
 
         Log.d(TAG, "buildRecordObjectFromID:component list includes: " + componentsList);
-        Log.d("tagdate", "buildRecordObjectFromID: tagdate : "+timerRecord.getDate().toString());
         return timerRecord;
     }
+    private static boolean[] loadActiveUnitsArray(String arrayName, SharedPreferences sharedPreferences) {
+
+        int size = sharedPreferences.getInt(arrayName + "_size", 6);
+        boolean[] array = new boolean[size];
+        for(int i=0;i<size;i++)
+            array[i] = sharedPreferences.getBoolean(arrayName + "_" + i, true);
+
+        return array;
+    }
+    private static boolean saveActiveUnitsArray(SharedPreferences sharedPreferences, boolean[] array, String arrayName) {
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(arrayName + "_size", array.length);
+
+        for (int i = 0; i < array.length; i++)
+            editor.putBoolean(arrayName + "_" + i, array[i]);
+
+        return editor.commit();
+    }
+
 
     private static ArrayList<String> getComponents(SharedPreferences sharedPreferences, String id) {
         ArrayList<String> components = new ArrayList<>();
-        components.add(sharedPreferences.getString(getMapID(id, LABEL), "FAKE"));
-        components.add(sharedPreferences.getString(getMapID(id, DATE), "FAKE"));
-        components.add(sharedPreferences.getString(getMapID(id, IMAGE_PATH), "FAKE"));
-        components.add(sharedPreferences.getString(getMapID(id, BACKGROUND_COLOR), "FAKE"));
-        components.add(sharedPreferences.getString(getMapID(id, TEXT_COLOR), "FAKE"));
-        components.add(sharedPreferences.getString(getMapID(id, PRIOR_TO_SHOW), "FAKE"));
-        components.add(sharedPreferences.getString(getMapID(id, BACKGROUND_THEME), "FAKE"));
-        components.add(sharedPreferences.getString(getMapID(id, RECORD_ID), "FAKE"));
+        components.add(sharedPreferences.getString(getSaveId(id, LABEL), "FAKE"));
+        components.add(sharedPreferences.getString(getSaveId(id, DATE), "FAKE"));
+        components.add(sharedPreferences.getString(getSaveId(id, IMAGE_PATH), "FAKE"));
+        components.add(sharedPreferences.getString(getSaveId(id, BACKGROUND_COLOR), "FAKE"));
+        components.add(sharedPreferences.getString(getSaveId(id, TEXT_COLOR), "FAKE"));
+        components.add(sharedPreferences.getString(getSaveId(id, PRIOR_TO_SHOW), "FAKE"));
+        components.add(sharedPreferences.getString(getSaveId(id, BACKGROUND_THEME), "FAKE"));
+        components.add(sharedPreferences.getString(getSaveId(id, RECORD_ID), "FAKE"));
         return components;
     }
-//     public static ArrayList<TimerRecord> fetchRecords(SharedPreferences sharedPreferences) {
-//        ArrayList<TimerRecord> newTimerRecords = new ArrayList<>();
-//        try {
-//            newTimerRecords = (ArrayList<TimerRecord>) ObjectSerializer.deserialize(sharedPreferences.getString("records", ObjectSerializer.serialize(new ArrayList<TimerRecord>())));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return newTimerRecords;
-//    }
+
 
     public static String saveImageToInternalStorage(Bitmap bitmapImage, ContextWrapper cw, TimerRecord timerRecord) {
 

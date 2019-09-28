@@ -7,7 +7,6 @@
         android:name="android.software.live_wallpaper"
         android:required="true" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,15 +15,21 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
         tools:replace="android:supportsRtl">
-        <activity android:name=".activities.CreditsActivity"></activity>
-        <activity android:name=".activities.EditCountDownActivity" />
+        <activity android:name=".activities.WidgetConfigurationActivity">
+            <intent-filter>
+
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGَURE" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.CreditsActivity" />
+        <activity android:name=".activities.SettingsActivity" />
         <activity android:name=".activities.TimerListActivity" />
         <activity android:name=".activities.CreateWallpaperActivity" />
 
         <service
             android:name=".services.CountDownWallpaperService"
             android:enabled="true"
-            android:label="Wallpaper Example"
+            android:label="Count Down Live Wallpaper"
             android:permission="android.permission.BIND_WALLPAPER">
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
@@ -36,16 +41,29 @@
         </service>
 
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".activities.EditCountDownActivity"
             android:exported="true"
             android:label="@string/title_activity_settings" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".services.CountDownWidget"
+            android:icon="@drawable/timer"
+            android:label="@string/countdown_widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/countdown_timer_info" />
+        </receiver>
 
         <meta-data
             android:name="preloaded_fonts"

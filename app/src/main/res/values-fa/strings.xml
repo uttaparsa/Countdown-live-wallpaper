@@ -71,5 +71,11 @@
     <string name="main_intro_showcase_title">خوش آمدید</string>
     <string name="set_background_intro_showcase">تصویر زمینه را انتخاب کنید</string>
     <string name="set_background_intro_showcase_title">انتخاب زمینه</string>
+    <string name="set_units">انتخاب واحد نمایش</string>
+    <string name="since">"گذشته از   "</string>
+    <string name="until">"مانده تا   "</string>
+    <string name="unit_select_title">واحد های قابل نماش</string>
+    <string name="no_timer_found_image_description">هیچ تایمری پیدا نشد</string>
+    <string name="edit_count_down_title">ویرایش شمارنده معکوس</string>
 
 </resources>

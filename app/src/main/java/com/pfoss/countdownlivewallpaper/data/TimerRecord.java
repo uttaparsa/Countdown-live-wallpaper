@@ -6,9 +6,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
 
+import com.pfoss.countdownlivewallpaper.utils.UnitType;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 public class TimerRecord {
@@ -20,16 +27,20 @@ public class TimerRecord {
     private BackgroundTheme backgroundTheme;
     private int backGroundColor;
     private int textColor;
+    private ActiveShowUnits activeShowUnits;
 
+    //This is the constructor that is used to make a new record
     public TimerRecord() {
         this.id = UUID.randomUUID().toString();
         Log.d("TIMER-RECORD", "TimerRecord:  id to string: " + this.id);
         this.label = "Label";
         this.setBackGroundColor(android.graphics.Color.BLACK);
         this.setTextColor(Color.WHITE);
+        this.setActiveShowUnits(ActiveShowUnits.getDefault());
     }
 
-    public TimerRecord(String label, String date, String imagePath, int backgroundColor, int textColor, boolean priorToShow, BackgroundTheme backgroundTheme, String id) {
+    //This is the constructor used to retrieve saved records in shared preferences
+    public TimerRecord(String label, String date, String imagePath, int backgroundColor, int textColor, boolean priorToShow, BackgroundTheme backgroundTheme,String id, ActiveShowUnits activeShowUnits) {
         this.label = label;
         this.date = date;
         this.imagePath = imagePath;
@@ -38,6 +49,15 @@ public class TimerRecord {
         this.priorToShow = priorToShow;
         this.backgroundTheme = backgroundTheme;
         this.id = id;
+        this.activeShowUnits = activeShowUnits;
+    }
+
+    public ActiveShowUnits getActiveShowUnits() {
+        return activeShowUnits;
+    }
+
+    public void setActiveShowUnits(ActiveShowUnits activeShowUnits) {
+        this.activeShowUnits = activeShowUnits;
     }
 
     public int getBackGroundColor() {
@@ -70,6 +90,37 @@ public class TimerRecord {
 
     public String getLabel() {
         return label;
+    }
+
+    public Date getDateInstance(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getDefault());
+        Date date = null;
+        try {
+            date = sdf.parse(this.getDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return date;
+    }
+    public int getTimeDifference(Date inputDate){
+
+        Log.d("tagdate", "getTimeDifferenceInSeconds: today's date : " + inputDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getDefault());
+        long timeDifferenceInMillis = 0;
+        try {
+
+            timeDifferenceInMillis = inputDate.getTime() - sdf.parse(this.getDate()).getTime();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        }
+
+        return (int) (timeDifferenceInMillis / 1000);
     }
 
     public boolean isPriorToShow() {

@@ -18,11 +18,15 @@
     <integer name="gradient_end_x_axis_in_dip">412</integer>
     <integer name="gradient_end_y_axis_in_dip">700</integer>
     <integer name="numbers_x_axis_in_dip">68</integer>
-    <integer name="space_between_units_in_dip">60</integer>
+    <integer name="space_between_units_in_dip">55</integer>
     <integer name="units_x_axis_in_dip">265</integer>
     <integer name="screen_height_in_dip">680</integer>
     <integer name="label_text_size">55</integer>
     <integer name="label_space_to_first_number_in_dip">80</integer>
     <integer name="screen_width_in_dip">412</integer>
+    <integer name="space_between_date_and_clock">20</integer>
+    <integer name="date_text_size">14</integer>
+    <integer name="since_or_until_text_size">18</integer>
+    <integer name="space_between_numbers_and_date">20</integer>
 
 </resources>

@@ -37,4 +37,23 @@ public enum UnitType  {
          default:return -1;
       }
    }
+
+    public int getUnitInSecond() {
+       switch (this.name){
+          case "year":
+             return 31556952;
+          case "month":
+             return 2629746;
+          case "day":
+             return 86400;
+          case "hour":
+             return 3600;
+          case "minute":
+             return 60;
+          case "second":
+             return 1;
+          default:return -1;
+       }
+    }
+
 }

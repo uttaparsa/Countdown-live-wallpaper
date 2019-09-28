@@ -4,9 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#0099cc"
     tools:context=".activities.MainActivity">
-
+    <!--android:background="#0099cc"-->
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
@@ -15,11 +14,11 @@
         class="com.pfoss.countdownlivewallpaper.fragments.CountDownDisplayFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/fragment_countdown_display"></fragment>
+        tools:layout="@layout/fragment_countdown_display" />
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
@@ -49,7 +48,8 @@
                 app:bmb_buttonPlaceEnum="buttonPlace_ham_4"
                 app:bmb_piecePlaceEnum="piecePlace_ham_4"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginRight="16dp" />
 
 
         </RelativeLayout>

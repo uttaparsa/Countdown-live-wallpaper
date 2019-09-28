@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragmentFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_rectangle_green"
     tools:context=".fragments.CountDownDisplayFragment">
 
 
@@ -15,7 +13,8 @@
         android:layout_height="200dp"
         android:layout_gravity="center"
         android:visibility="invisible"
-        android:src="@drawable/abstract_page_not_found" />
+        android:src="@drawable/abstract_page_not_found"
+        android:contentDescription="@string/no_timer_found_image_description" />
 
     <SurfaceView
         android:layout_width="match_parent"

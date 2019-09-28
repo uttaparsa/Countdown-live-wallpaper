@@ -23,12 +23,16 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.pfoss.countdownlivewallpaper.R;
+import com.pfoss.countdownlivewallpaper.data.ActiveShowUnits;
 import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
+import com.pfoss.countdownlivewallpaper.dialogs.MultiSelectDialog;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
 import com.pfoss.countdownlivewallpaper.utils.RecordManager;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
@@ -39,7 +43,6 @@ public class EditCountDownActivity extends AppCompatActivity {
     FrameLayout textViewFrame;
     TextView textColorPreviewTextView;
     FrameLayout backgroundViewFrame;
-    TextView backgroundPreviewText;
     private Bitmap userSelectedBitmap;
     private int userSelectedColor;
     boolean changedBeenMade = false;
@@ -54,11 +57,11 @@ public class EditCountDownActivity extends AppCompatActivity {
         textViewFrame = findViewById(R.id.textColorPreviewBackground);
         textColorPreviewTextView = findViewById(R.id.textColorPreview);
         backgroundViewFrame = findViewById(R.id.backgroundPreview);
-        backgroundPreviewText = findViewById( R.id.backgroundPreviewText);
+//        backgroundPreviewText = findViewById( R.id.backgroundPreviewText);
         loadRecords();
         initTextColorPreview();
         initializeToolbar();
-
+        selectedUnits = currentRecord.getActiveShowUnits().getActiveShowUnitsBoolArray();
     }
 
     private void initTextColorPreview() {
@@ -67,20 +70,18 @@ public class EditCountDownActivity extends AppCompatActivity {
         textViewFrame.setBackgroundColor(currentRecord.getBackGroundColor());
     }
 
-    private void initBackgroundColorPreview(){
-
-    }
 
 
     private void loadRecords() {
         timersSharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
         timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
         currentRecord = RecordManager.getPriorToShowRecord(timerRecords);
+
     }
 
 
     public void setTextColorClickable(View view) {
-        AmbilWarnaDialog dialog = new AmbilWarnaDialog(view.getContext(), R.attr.colorPrimary, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+        AmbilWarnaDialog colorSelectDialog = new AmbilWarnaDialog(view.getContext(), R.attr.colorPrimary, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
             public void onOk(AmbilWarnaDialog dialog, int color) {
                 // color is the color selected by the user.
@@ -94,7 +95,7 @@ public class EditCountDownActivity extends AppCompatActivity {
 
             }
         });
-        dialog.show();
+        colorSelectDialog.show();
 
     }
     public void setBackgroundClickable(View view){
@@ -178,6 +179,8 @@ public class EditCountDownActivity extends AppCompatActivity {
                         show();
 
     }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -229,8 +232,37 @@ public class EditCountDownActivity extends AppCompatActivity {
     private void initializeToolbar() {
         Toolbar toolbar;
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(getResources().getString(R.string.timers_list_title));
+        toolbar.setTitle(getResources().getString(R.string.edit_count_down_title));
         setSupportActionBar(toolbar);
 
     }
+
+    public void setActiveUnits(View view) {
+
+        MultiSelectDialog activeUnitsSelectDialog = new MultiSelectDialog(unitChoiceClickListener , unitChoiceOkButtonListener);
+        activeUnitsSelectDialog.setCheckedItems(currentRecord.getActiveShowUnits().getActiveShowUnitsBoolArray());
+        activeUnitsSelectDialog.show(this.getSupportFragmentManager(),"selectTag");
+    }
+    boolean[] selectedUnits;
+    DialogInterface.OnMultiChoiceClickListener unitChoiceClickListener = new DialogInterface.OnMultiChoiceClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+            if(b){
+                selectedUnits[i] = true;
+            }else {
+                selectedUnits[i] = false;
+            }
+
+        }
+    };
+    DialogInterface.OnClickListener unitChoiceOkButtonListener = new DialogInterface.OnClickListener() {//On positive button click listener
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+            Log.d("unitChoiceOk", "onClick: changing active units: "+currentRecord.getActiveShowUnits().toString());
+            currentRecord.getActiveShowUnits().setActiveShowUnits(selectedUnits);
+            changedBeenMade = true;
+            Log.d("unitChoiceOk", "onClick: changing active units: "+currentRecord.getActiveShowUnits().toString());
+        }
+    };
+
 }

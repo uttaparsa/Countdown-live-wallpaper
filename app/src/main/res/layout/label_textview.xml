@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/labelTextView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="label"
+    android:textSize="7sp"
+    android:alpha="0.80"
+    android:layout_marginRight="1dp"
+    android:layout_gravity="bottom|right"
+    android:textAppearance="?android:attr/textAppearanceLarge" />

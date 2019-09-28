@@ -52,6 +52,7 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_begin="20dp"
             app:layout_constraintGuide_percent="0.2" />
+
         <FrameLayout
             android:id="@+id/backgroundPreview"
             android:layout_width="match_parent"
@@ -59,17 +60,18 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:background="@android:color/transparent"
-            android:onClick="setBackgroundClickable"
             android:gravity="center">
 
-            <TextView
-                android:id="@+id/backgroundPreviewText"
+
+            <Button
+                android:id="@+id/material_text_button"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/change_background"
-                android:textColor="@android:color/black"
-                android:textSize="30sp" />
+                android:textSize="25sp"
+                android:onClick="setBackgroundClickable"
+                android:text="@string/change_background"/>
         </FrameLayout>
 
         <androidx.constraintlayout.widget.Guideline
@@ -79,7 +81,40 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_begin="20dp"
             app:layout_constraintGuide_percent="0.4" />
+        <FrameLayout
+            android:id="@+id/setUnitsButtonFrame"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@android:color/transparent"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/material_button"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:onClick="setActiveUnits"
+                android:textSize="20sp"
+                android:text="@string/set_units"/>
+
+        </FrameLayout>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="20dp"
+            app:layout_constraintGuide_percent="0.6" />
     </LinearLayout>
+
+
+
+
 
 
 

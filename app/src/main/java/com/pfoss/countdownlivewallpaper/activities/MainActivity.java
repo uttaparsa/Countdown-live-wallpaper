@@ -47,13 +47,13 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     boolean isPersian = Locale.getDefault().getLanguage().equals(new Locale("fa").getLanguage());
 
-    private static final boolean AUTO_HIDE = true;
-
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+//    private static final boolean AUTO_HIDE = true;
+//
+//    /**
+//     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
+//     * user interaction before hiding the system UI.
+//     */
+//    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
 
     /**
      * Some older devices needs a small delay between UI widget updates
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-//        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
 
     }
 
@@ -240,10 +240,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.settingsMenuItem:
-                Intent timerPreferences = new Intent(this, SettingsActivity.class);
-                startActivity(timerPreferences);
-                break;
+//            case R.id.settingsMenuItem:
+//                Intent timerPreferences = new Intent(this, SettingsActivity.class);
+//                startActivity(timerPreferences);
+//                break;
             case R.id.countDownListMenuItem:
                 Intent i2 = new Intent(MainActivity.this, TimerListActivity.class);
                 startActivity(i2);
@@ -272,15 +272,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
-        delayedHide(100);
-    }
 
     private void toggle() {
         if (mVisible) {
@@ -324,16 +315,6 @@ public class MainActivity extends AppCompatActivity {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
-
-//    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-//        @Override
-//        public boolean onTouch(View view, MotionEvent motionEvent) {
-//            if (AUTO_HIDE) {
-//                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-//            }
-//            return false;
-//        }
-//    };
 
     private int getNavigationBarHeight() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

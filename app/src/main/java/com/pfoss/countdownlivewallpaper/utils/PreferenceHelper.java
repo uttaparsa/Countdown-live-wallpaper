@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class PreferenceHelper {
-
+    @Deprecated
     public static ArrayList<String> fetchPreferences(Context context) {//This might throw nullpointer
 //        ArrayList<UnitType> unitTypeArrayList = new ArrayList<UnitType>();
         try {

@@ -52,7 +52,7 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     }
 
     private void showSurface() {
-        if (!timerRecords.isEmpty()) {//TODO : THIS PIECE OF CODE SHOULD BE IN FUNCTION
+        if (!timerRecords.isEmpty()) {
             startDrawer();
         } else {
             noTimerFoundImageView.setVisibility(View.VISIBLE);
@@ -62,7 +62,6 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
 
     private void startDrawer() {
         drawer.setCurrentRecord(currentRecord);
-        drawer.initRunnable();
         drawer.start();
     }
 
@@ -70,7 +69,6 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     public void onResume() {
         super.onResume();
         loadRecords();
-        drawer.refreshActiveTimeUnits();
         Log.d("DISPLAY", "onResume");
     }
 
@@ -103,6 +101,7 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
             noTimerFoundImageView.setVisibility(View.VISIBLE);
             surfaceView.setVisibility(View.INVISIBLE);
         }
+
         Log.d("DISPLAY", "surfaceCreated");
     }
 
@@ -120,7 +119,7 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     }
 
 
-    private void loadRecords() {
+    private void loadRecords( ) {
 
         timersSharedPreferences = this.getActivity().getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
         timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
@@ -129,7 +128,7 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     }
 
 
-    public void deleteTimer() {//TODO : better be short method
+    public void deleteTimer() {
         if (timerRecords.isEmpty()) {
             Log.d(TAG, "No record to delete");
             Toast.makeText(getContext(),
@@ -147,13 +146,10 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
             loadRecords();
             if (!timerRecords.isEmpty()) {
                 startDrawer();
-                Log.d(TAG, "records weren't empty ,starting drawer");
             } else {
                 noTimerFoundImageView.setVisibility(View.VISIBLE);
                 surfaceView.setVisibility(View.INVISIBLE);
-                Log.d("DISPLAY-SURFACE", "records were empty , showing empty image view");
             }
-
 
         }
 
