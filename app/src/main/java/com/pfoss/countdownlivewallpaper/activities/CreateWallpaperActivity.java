@@ -29,7 +29,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.mohamadamin.persianmaterialdatetimepicker.time.RadialPickerLayout;
 import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
@@ -67,7 +66,8 @@ public class CreateWallpaperActivity extends AppCompatActivity
     private boolean hasUserSetDateAndTime = false;
     private boolean hasUserSetBackground = false;
 
-
+    final int PIC_CROP = 12;
+    final int IMAGE_PICKER = 18;
     private SharedPreferences timersSharedPreferences;
     private TimerRecord timerRecord;
     private int itemSelected;
@@ -258,7 +258,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
                             case IMAGE_BACKGROUND:
 
                                 Intent imagePickIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                startActivityForResult(imagePickIntent, 1);
+                                startActivityForResult(imagePickIntent, IMAGE_PICKER);
                                 break;
                             case SOLID_BACKGROUND:
                                 AmbilWarnaDialog dialog = new AmbilWarnaDialog(passView.getContext(), R.attr.colorPrimary, new AmbilWarnaDialog.OnAmbilWarnaListener() {
@@ -300,7 +300,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
                                     case IMAGE_BACKGROUND:
 
                                         Log.d("CREATE-OK", "theme was set to image");
-                                        changePreviewToImagePreviewAndStoreImageFileInMemory();
+                                        changePreviewToUserSetPreviewAndStoreImageFileInMemory();
                                         timerRecord.setBackgroundTheme(BackgroundTheme.PICTURE);
 
                                         break;
@@ -332,7 +332,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
         backgroundImagePreview.setBackgroundColor(userSelectedColor);
     }
 
-    private void changePreviewToImagePreviewAndStoreImageFileInMemory() {
+    private void changePreviewToUserSetPreviewAndStoreImageFileInMemory() {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
 
         int screenWidth = metrics.widthPixels;
@@ -359,14 +359,34 @@ public class CreateWallpaperActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
 
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            Uri selectedImage = data.getData();
+        if (requestCode == IMAGE_PICKER && resultCode == RESULT_OK && data != null) {
+
             try {
-                userSelectedBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+//                userSelectedBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                Uri selectedImage = data.getData();
+                Intent cropIntent = new Intent("com.android.camera.action.CROP");
+                //indicate image type and Uri
+                cropIntent.setDataAndType(selectedImage, "image/*");
+                //set crop properties
+                cropIntent.putExtra("crop", "true");
+                //indicate aspect of desired crop
+                cropIntent.putExtra("aspectX", 1);
+                cropIntent.putExtra("aspectY", 1);
+                //indicate output X and Y
+                cropIntent.putExtra("outputX", 256);
+                cropIntent.putExtra("outputY", 256);
+                //retrieve data on return
+                cropIntent.putExtra("return-data", true);
+                cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, selectedImage);
+                //start the activity - we handle returning in onActivityResult
+                startActivityForResult(cropIntent, PIC_CROP);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }else if (requestCode == PIC_CROP && resultCode == RESULT_OK ){
+            Bundle extras = data.getExtras();
+            userSelectedBitmap = extras.getParcelable("data");
         }
     }
 
