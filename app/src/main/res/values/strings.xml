@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Count Down Live Wallpaper</string>
+    <string name="app_name">Countdown Live Wallpaper</string>
     <string name="change_lang_button">Language</string>
     <string name="title_activity_settings">Settings</string>
     <string name="change_language_title">Choose Language</string>
@@ -9,7 +9,7 @@
 
 
     <!-- Messages Preferences -->
-    <string name="wallpaper_description">Count down wallpaper xml layout</string>
+    <string name="wallpaper_description">Countdown wallpaper xml layout</string>
 
     <!-- Create Timer -->
     <string name="label_select_timer">Name</string>
@@ -56,9 +56,9 @@
 
     <!-- List menu title-->
     <string name="timers_list_title">Timers</string>
-    <string name="edit_count_down">Edit Count Down</string>
+    <string name="edit_count_down">Edit Countdown</string>
     <string name="preview">Text Color</string>
-    <string name="toast_background_not_set">Select Backgound First</string>
+    <string name="toast_background_not_set">Select Background First</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     <string name="multi_select_list_preferences">Choose Unit</string>
@@ -66,7 +66,7 @@
     <string name="contact_us">Credits</string>
     <string name="credits_page_title">Credits</string>
     <string name="thanks_to_credits">Thanks To</string>
-    <string name="main_intro_showcase">Click this button to add a new count down timer</string>
+    <string name="main_intro_showcase">Click this button to add a new countdown timer</string>
     <string name="main_intro_showcase_title">Welcome</string>
     <string name="set_background_intro_showcase_title">Choose Image</string>
     <string name="set_background_intro_showcase">Click this image to change background</string>
@@ -75,9 +75,11 @@
     <string name="no_timer_found_image_description">No Timer Found</string>
     <string name="since">"Since   "</string>
     <string name="until">"Until     "</string>
-    <string name="edit_count_down_title">Edit Count Down</string>
-    <string name="countdown_widget_label">Count Down Wiget</string>
-    <string name="widget_configuration_activity">Select Count Down</string>
+    <string name="edit_count_down_title">Edit Countdown</string>
+    <string name="countdown_widget_label">Countdown Widget</string>
+    <string name="widget_configuration_activity">Select Countdown</string>
+    <string name="timer_name">Timer Name</string>
+    <string name="timer_date">Timer Date</string>
 
 
 </resources>

@@ -6,6 +6,8 @@
     android:layout_height="50dp"
     android:background="@color/colorPrimary"
     android:elevation="4dp"
+    android:minHeight="100dp"
+    android:gravity="start"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     app:popupTheme="@style/Theme.AppCompat.Light">
 

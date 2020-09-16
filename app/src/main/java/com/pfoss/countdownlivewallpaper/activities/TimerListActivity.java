@@ -4,49 +4,75 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.Gravity;
+import android.view.WindowManager;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
+import com.pfoss.countdownlivewallpaper.themes.Style;
 import com.pfoss.countdownlivewallpaper.utils.RecordManager;
 
 import java.util.ArrayList;
 
 public class TimerListActivity extends AppCompatActivity {
-    ArrayList<TimerRecord> records;
+    ArrayList<TimerRecord> timersData;
+    private RecyclerView mTimersListRecyclerView;
+    private TimerListAdapter mTimersListAdapter;
+    private RecyclerView.LayoutManager mTimersListLayoutManager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer_list);
         initializeToolbar();
-        ListView recordsListView = findViewById(R.id.timerListView);
         initRecords();
 
-        ArrayAdapter<TimerRecord> timerListArrayAdapter = new ArrayAdapter<TimerRecord>(this, android.R.layout.simple_list_item_1, records);
-        recordsListView.setAdapter(timerListArrayAdapter);
+        mTimersListRecyclerView = findViewById(R.id.timerListView);
+        mTimersListRecyclerView.setHasFixedSize(true);
+        mTimersListLayoutManager = new LinearLayoutManager(this);
+        mTimersListAdapter = new TimerListAdapter(timersData);
 
-        recordsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mTimersListRecyclerView.setLayoutManager(mTimersListLayoutManager);
+        mTimersListRecyclerView.setAdapter(mTimersListAdapter);
+
+        mTimersListAdapter.setOnItemClickListener(new TimerListAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                requestToShowTimer(i);
+            public void onItemClick(int position) {
+                requestToShowTimer(position);
             }
         });
+
+
+
     }
 
     private void initRecords() {
         SharedPreferences packageSharedPreferences = getSharedPreferences("com.pfoss.countdownlivewallpaper", MODE_PRIVATE);
-        records = RecordManager.fetchRecords(packageSharedPreferences);
+        timersData = RecordManager.fetchRecords(packageSharedPreferences);
     }
     private void initializeToolbar() {
         Toolbar toolbar;
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(getResources().getString(R.string.timers_list_title));
+        toolbar.setTitle("");
+        TextView toolbarBigTitle = findViewById(R.id.titleText);
+        toolbarBigTitle.setText(getResources().getString(R.string.timers_list_title));
+        toolbarBigTitle.setTextColor(Color.BLACK);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setElevation(0);
+            //getWindow().setStatusBarColor(Color.GRAY);
+        }
+
         setSupportActionBar(toolbar);
 
     }

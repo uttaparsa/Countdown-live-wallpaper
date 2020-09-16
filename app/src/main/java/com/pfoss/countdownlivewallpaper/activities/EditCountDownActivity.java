@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -20,6 +22,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pfoss.countdownlivewallpaper.R;
@@ -40,9 +43,11 @@ public class EditCountDownActivity extends AppCompatActivity {
     private SharedPreferences timersSharedPreferences;
     private ArrayList<TimerRecord> timerRecords;
     private TimerRecord currentRecord;
-    FrameLayout textViewFrame;
+    CardView textViewFrame;
     TextView textColorPreviewTextView;
     FrameLayout backgroundViewFrame;
+    ImageView colorizeIconView;
+    ImageView backGroundIconView;
     private Bitmap userSelectedBitmap;
     private int userSelectedColor;
     boolean changedBeenMade = false;
@@ -57,7 +62,9 @@ public class EditCountDownActivity extends AppCompatActivity {
         textViewFrame = findViewById(R.id.textColorPreviewBackground);
         textColorPreviewTextView = findViewById(R.id.textColorPreview);
         backgroundViewFrame = findViewById(R.id.backgroundPreview);
-//        backgroundPreviewText = findViewById( R.id.backgroundPreviewText);
+        colorizeIconView = findViewById(R.id.colorizeIconView);
+        backGroundIconView = findViewById(R.id.backGroundIconView);
+
         loadRecords();
         initTextColorPreview();
         initializeToolbar();
@@ -67,7 +74,8 @@ public class EditCountDownActivity extends AppCompatActivity {
     private void initTextColorPreview() {
 
         textColorPreviewTextView.setTextColor(currentRecord.getTextColor());
-        textViewFrame.setBackgroundColor(currentRecord.getBackGroundColor());
+        textViewFrame.setCardBackgroundColor(currentRecord.getBackGroundColor());
+        DrawableCompat.setTint(colorizeIconView.getDrawable(), currentRecord.getTextColor());
     }
 
 
@@ -247,11 +255,7 @@ public class EditCountDownActivity extends AppCompatActivity {
     DialogInterface.OnMultiChoiceClickListener unitChoiceClickListener = new DialogInterface.OnMultiChoiceClickListener() {
         @Override
         public void onClick(DialogInterface dialogInterface, int i, boolean b) {
-            if(b){
-                selectedUnits[i] = true;
-            }else {
-                selectedUnits[i] = false;
-            }
+            selectedUnits[i] = b;
 
         }
     };

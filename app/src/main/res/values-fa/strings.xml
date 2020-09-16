@@ -57,7 +57,7 @@
     <string name="second" >ثانیه</string>
 
     <!-- List menu title-->
-    <string name="timers_list_title">تایمر ها</string>
+    <string name="timers_list_title">تایمرها</string>
     <string name="preview">رنگ متن</string>
     <string name="edit_count_down">ویرایش</string>
     <string name="toast_background_not_set">اپتدا باید تصویر زمینه انتخاب کنید</string>
@@ -77,5 +77,9 @@
     <string name="unit_select_title">واحد های قابل نماش</string>
     <string name="no_timer_found_image_description">هیچ تایمری پیدا نشد</string>
     <string name="edit_count_down_title">ویرایش شمارنده معکوس</string>
+    <string name="timer_name">Timer Name</string>
+    <string name="timer_date">Timer Date</string>
+    <string name="countdown_widget_label">وبجت شمارنده معکوس</string>
+    <string name="widget_configuration_activity">انتخاب شمارنده معکوس</string>
 
 </resources>

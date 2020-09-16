@@ -46,7 +46,7 @@ public class TextStyle extends Style {
     }
 
     public Paint getNumbersStyle() {
-        Paint textTheme = new Paint();
+        Paint textTheme = new PaintStyle();
 
         textTheme.setTextSize(NUMBER_TEXT_SIZE);
         textTheme.setColor(currentRecord.getTextColor());
@@ -58,7 +58,7 @@ public class TextStyle extends Style {
     }
 
     public Paint getUnitsStyle() {
-        Paint textTheme = new Paint();
+        Paint textTheme = new PaintStyle();
 
         textTheme.setTextSize(UNIT_TEXT_SIZE);
         textTheme.setColor(currentRecord.getTextColor());
@@ -70,7 +70,7 @@ public class TextStyle extends Style {
     }
 
     public Paint getLabelStyle() {
-        Paint textTheme = new Paint();
+        Paint textTheme = new PaintStyle();
 
         textTheme.setTextSize(LABEL_TEXT_SIZE);
         textTheme.setColor(currentRecord.getTextColor());
@@ -81,7 +81,7 @@ public class TextStyle extends Style {
         return textTheme;
     }
     public Paint getDateAndTimeTextStyle(){
-        Paint textTheme = new Paint();
+        Paint textTheme = new PaintStyle();
 
         textTheme.setTextSize(DATE_TEXT_SIZE);
         textTheme.setColor(currentRecord.getTextColor());
@@ -92,7 +92,7 @@ public class TextStyle extends Style {
         return textTheme;
     }
     public Paint getUntilTextStyle(){
-        Paint textTheme = new Paint();
+        Paint textTheme = new PaintStyle();
 
         textTheme.setTextSize(SINCE_OR_UNTIL_TEXT_SIZE);
         textTheme.setColor(currentRecord.getTextColor());
