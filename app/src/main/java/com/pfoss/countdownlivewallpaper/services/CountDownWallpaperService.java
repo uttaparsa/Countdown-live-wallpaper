@@ -1,6 +1,5 @@
 package com.pfoss.countdownlivewallpaper.services;
 
-import android.content.SharedPreferences;
 import android.service.wallpaper.WallpaperService;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -9,18 +8,14 @@ import com.pfoss.countdownlivewallpaper.CountDownDrawer;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 
-import java.util.ArrayList;
-
 
 public class CountDownWallpaperService extends WallpaperService {
-SharedPreferences sharedPreferences;
-ArrayList<TimerRecord> timerRecords = new ArrayList<TimerRecord>();
-TimerRecord currentRecord;
+    private TimerRecord timerToDisplay;
 
     public void loadRecords() {
-        sharedPreferences = getSharedPreferences("com.pfoss.countdownlivewallpaper", MODE_PRIVATE);
-        timerRecords = TimerViewModel.fetchRecords(sharedPreferences);
-        currentRecord = TimerViewModel.getPriorToShowRecord(timerRecords);
+        TimerViewModel timerViewModel = new TimerViewModel(this.getApplicationContext());
+        timerViewModel.fetchRecords();
+        timerToDisplay = timerViewModel.getLastSelectedTimer();
     }
 
     private CountDownDrawer drawer;
@@ -30,7 +25,6 @@ TimerRecord currentRecord;
 
         return new SimpleWallpaperEngine();
     }
-
 
 
     private class SimpleWallpaperEngine extends Engine {
@@ -67,7 +61,7 @@ TimerRecord currentRecord;
 
         public SimpleWallpaperEngine() {
             loadRecords();
-            drawer = new CountDownDrawer(getBaseContext() , currentRecord,this);
+            drawer = new CountDownDrawer(getBaseContext(), timerToDisplay, this);
             Log.d("Wallpaper", "SimpleWallpaperEngine: runnning");
 
         }

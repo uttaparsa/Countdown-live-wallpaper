@@ -37,6 +37,7 @@ import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.fragments.CountDownDisplayFragment;
 import com.pfoss.countdownlivewallpaper.services.CountDownWallpaperService;
 import com.pfoss.countdownlivewallpaper.utils.RuntimeTools;
+import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 
 import java.util.Locale;
 
@@ -198,7 +199,9 @@ public class MainActivity extends AppCompatActivity {
                 HamButton.Builder builder = new HamButton.Builder().normalText(getResources().getString(R.string.set_as_wallpaper)).typeface(typeface).listener(new OnBMClickListener() {
                     @Override
                     public void onBoomButtonClick(int index) {
-                        if (countDownDisplayFragment.getTimerRecords().isEmpty()) {
+                        TimerViewModel timerViewModel = new TimerViewModel(getApplicationContext());
+                        timerViewModel.fetchRecords();
+                        if (timerViewModel.getTimerRecords().isEmpty()) {
                             Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.no_timer_yet), Toast.LENGTH_SHORT).show();
                         } else {
                             Intent intent = new Intent(

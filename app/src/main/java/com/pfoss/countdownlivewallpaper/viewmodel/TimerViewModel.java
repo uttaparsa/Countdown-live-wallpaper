@@ -31,25 +31,32 @@ public class TimerViewModel {
     private static final int ACTIVE_SHOW_UNITS = 8;
 
 
-    private Context mContext;
     private ArrayList<TimerRecord> mTimerRecords;
     private SharedPreferences mSharedPreferences;
 
-    public TimerViewModel(Context mContext) {
-        this.mContext = mContext;
+    public TimerViewModel(Context context) {
+        mSharedPreferences = context.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
+        this.fetchRecords();
     }
 
-    public void loadRecords() {
-
+    public ArrayList<TimerRecord> getTimerRecords() {
+        return mTimerRecords;
     }
 
-    public void setAllElementsFlagToFalse() {
+    public void saveNewRecord(TimerRecord newRecord) {
+
+        this.setAllTimersLastDisplayFlagToFalse();
+        this.getTimerRecords().add(newRecord);
+        this.updateRecordsInSharedPreferences();
+    }
+
+    public void setAllTimersLastDisplayFlagToFalse() {
         for (TimerRecord element : mTimerRecords) {
             element.setPriorToShow(false);
         }
     }
 
-    public TimerRecord getPriorToShowRecord() {
+    public TimerRecord getLastSelectedTimer() {
         for (int i = 0; i < mTimerRecords.size(); i++) {
             if (mTimerRecords.get(i).isPriorToShow()) {
                 return mTimerRecords.get(i);
@@ -131,19 +138,19 @@ public class TimerViewModel {
                 Boolean.parseBoolean(componentsList.get(PRIOR_TO_SHOW)),
                 BackgroundTheme.getValueOf(componentsList.get(BACKGROUND_THEME)),
                 componentsList.get(RECORD_ID),
-                new ActiveShowUnits(this.loadActiveUnitsArray(getSaveId(id, ACTIVE_SHOW_UNITS), sharedPreferences))
+                new ActiveShowUnits(this.loadActiveUnitsArray(getSaveId(id, ACTIVE_SHOW_UNITS)))
         );
 
         Log.d(TAG, "buildRecordObjectFromID:component list includes: " + componentsList);
         return timerRecord;
     }
 
-    private boolean[] loadActiveUnitsArray(String arrayName, SharedPreferences sharedPreferences) {
+    private boolean[] loadActiveUnitsArray(String arrayName) {
 
-        int size = sharedPreferences.getInt(arrayName + "_size", 6);
+        int size = mSharedPreferences.getInt(arrayName + "_size", 6);
         boolean[] array = new boolean[size];
         for (int i = 0; i < size; i++)
-            array[i] = sharedPreferences.getBoolean(arrayName + "_" + i, true);
+            array[i] = mSharedPreferences.getBoolean(arrayName + "_" + i, true);
 
         return array;
     }
@@ -208,21 +215,21 @@ public class TimerViewModel {
             mTimerRecords.get(mTimerRecords.size() - 1).setPriorToShow(true);
         }
         Log.d("ARRAY", "after " + mTimerRecords.toString());
-        this.updateRecordsInSharedPreferences(mSharedPreferences, mTimerRecords);
+        this.updateRecordsInSharedPreferences();
     }
 
-    private static final String arabic = "\u06f0\u06f1\u06f2\u06f3\u06f4\u06f5\u06f6\u06f7\u06f8\u06f9";
+    public TimerRecord getTimerRecordByWidgetId(int widgetId) throws NullPointerException {
+        TimerRecord timerRecord = null;
+        int currentCountDownIndexInRecordsArray = mSharedPreferences.getInt(String.valueOf(widgetId), -1);
+        Log.d(TAG, "getCurrent: currentCountDownIndexInRecordsArray value is : " + currentCountDownIndexInRecordsArray);
 
-    private static String arabicToDecimal(String number) {
-        char[] chars = new char[number.length()];
-        for (int i = 0; i < number.length(); i++) {
-            char ch = number.charAt(i);
-            if (ch >= 0x0660 && ch <= 0x0669)
-                ch -= 0x0660 - '0';
-            else if (ch >= 0x06f0 && ch <= 0x06F9)
-                ch -= 0x06f0 - '0';
-            chars[i] = ch;
+        try {
+            timerRecord = mTimerRecords.get(currentCountDownIndexInRecordsArray);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            Log.i(TAG, "getCurrent: index was not valid");
         }
-        return new String(chars);
+        return timerRecord;
     }
+
 }

@@ -21,7 +21,6 @@ import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 import java.util.ArrayList;
 
 public class TimerListActivity extends AppCompatActivity {
-    ArrayList<TimerRecord> timersData;
     private RecyclerView mTimersListRecyclerView;
     private TimerListAdapter mTimersListAdapter;
     private RecyclerView.LayoutManager mTimersListLayoutManager;
@@ -33,12 +32,14 @@ public class TimerListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer_list);
         initializeToolbar();
-        initRecords();
+
+        TimerViewModel timerViewModel = new TimerViewModel(this.getApplicationContext());
+        timerViewModel.fetchRecords();
 
         mTimersListRecyclerView = findViewById(R.id.timerListView);
         mTimersListRecyclerView.setHasFixedSize(true);
         mTimersListLayoutManager = new LinearLayoutManager(this);
-        mTimersListAdapter = new TimerListAdapter(timersData);
+        mTimersListAdapter = new TimerListAdapter(timerViewModel.getTimerRecords());
 
         mTimersListRecyclerView.setLayoutManager(mTimersListLayoutManager);
         mTimersListRecyclerView.setAdapter(mTimersListAdapter);
@@ -63,10 +64,6 @@ public class TimerListActivity extends AppCompatActivity {
 
     }
 
-    private void initRecords() {
-        SharedPreferences packageSharedPreferences = getSharedPreferences("com.pfoss.countdownlivewallpaper", MODE_PRIVATE);
-        timersData = TimerViewModel.fetchRecords(packageSharedPreferences);
-    }
     private void initializeToolbar() {
         Toolbar toolbar;
         toolbar = findViewById(R.id.toolbar);
@@ -77,7 +74,6 @@ public class TimerListActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(0);
-            //getWindow().setStatusBarColor(Color.GRAY);
         }
 
         setSupportActionBar(toolbar);

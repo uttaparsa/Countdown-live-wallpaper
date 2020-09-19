@@ -19,14 +19,11 @@ import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.services.CountDownWidget;
 import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 
-import java.util.ArrayList;
-
 public class WidgetConfigurationActivity extends AppCompatActivity {
     private int appWidgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
-    private ArrayList<TimerRecord> records;
     private SharedPreferences packageSharedPreferences;
     private static String TAG = "WidgetConfig";
-
+    private TimerViewModel timerViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,24 +46,23 @@ public class WidgetConfigurationActivity extends AppCompatActivity {
             finish();
         }
 
-        prepareListOfCountDowns();
+        prepareListOfTimer();
 
 
     }
 
-    private void prepareListOfCountDowns() {
-        ListView recordsListView = findViewById(R.id.timerListView);
-        initRecords();
-        ArrayAdapter<TimerRecord> timerListArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, records);
-        recordsListView.setAdapter(timerListArrayAdapter);
-        recordsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    private void prepareListOfTimer() {
+        ListView timersListView = findViewById(R.id.timerListView);
+        loadTimerData();
+        ArrayAdapter<TimerRecord> timerListArrayAdapter = new ArrayAdapter<TimerRecord>(this, android.R.layout.simple_list_item_1, timerViewModel.getTimerRecords());
+        timersListView.setAdapter(timerListArrayAdapter);
+        timersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 saveAsTimerToShow(i);
             }
         });
     }
-
 
 
     private void saveAsTimerToShow(int selectedIndex) {
@@ -100,8 +96,8 @@ public class WidgetConfigurationActivity extends AppCompatActivity {
 
     }
 
-    private void initRecords() {
-        packageSharedPreferences = getSharedPreferences("com.pfoss.countdownlivewallpaper", MODE_PRIVATE);
-        records = TimerViewModel.fetchRecords(packageSharedPreferences);
+    private void loadTimerData() {
+        timerViewModel = new TimerViewModel(this.getApplicationContext());
+        timerViewModel.fetchRecords();
     }
 }

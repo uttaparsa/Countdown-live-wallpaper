@@ -1,17 +1,11 @@
 package com.pfoss.countdownlivewallpaper;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -26,7 +20,6 @@ import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.services.CountDownWallpaperService;
 import com.pfoss.countdownlivewallpaper.themes.TextStyle;
-import com.pfoss.countdownlivewallpaper.utils.Gradient;
 import com.pfoss.countdownlivewallpaper.utils.MyLinearGradient;
 import com.pfoss.countdownlivewallpaper.utils.UnitType;
 

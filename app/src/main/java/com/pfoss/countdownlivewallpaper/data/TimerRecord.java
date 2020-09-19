@@ -40,7 +40,7 @@ public class TimerRecord {
     }
 
     //This is the constructor used to retrieve saved records in shared preferences
-    public TimerRecord(String label, String date, String imagePath, int backgroundColor, int textColor, boolean priorToShow, BackgroundTheme backgroundTheme,String id, ActiveShowUnits activeShowUnits) {
+    public TimerRecord(String label, String date, String imagePath, int backgroundColor, int textColor, boolean priorToShow, BackgroundTheme backgroundTheme, String id, ActiveShowUnits activeShowUnits) {
         this.label = label;
         this.date = date;
         this.imagePath = imagePath;

@@ -7,10 +7,8 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
@@ -69,8 +67,8 @@ public class CreateWallpaperActivity extends AppCompatActivity
 //    private Uri tempUri = null;
 
 
-    private SharedPreferences timersSharedPreferences;
-    private TimerRecord timerRecord;
+    private TimerRecord newTimerRecord;
+    private TimerViewModel timerViewModel;
     private int itemSelected;
     private BackgroundPicker backgroundPicker;
 
@@ -85,7 +83,8 @@ public class CreateWallpaperActivity extends AppCompatActivity
         setContentView(R.layout.activity_create_wallpaper);
 
         createInstanceOfViews();
-        timerRecord = new TimerRecord();
+        newTimerRecord = new TimerRecord();
+        timerViewModel = new TimerViewModel(getApplicationContext());
         dateSetButton.setOnClickListener(new View.OnClickListener() {//TODO : change this listener place
             @Override
             public void onClick(View view) {
@@ -203,8 +202,8 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
     public void createNewTimerClickable(View view) {
         if (hasUserSetDateAndTime && hasUserSetBackground) {
-            initializeRecordObject(timerRecord);
-            saveNewRecord(timerRecord);
+            initializeRecordObject(newTimerRecord);
+            timerViewModel.saveNewRecord(newTimerRecord);
             Log.i("SAVE", "new record has been saved");
 
             goToMainActivity();
@@ -238,14 +237,6 @@ public class CreateWallpaperActivity extends AppCompatActivity
         timerRecord.setLabel(labelEditText.getText().toString());
     }
 
-
-    private void saveNewRecord(TimerRecord newRecord) {
-        timersSharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
-        ArrayList<TimerRecord> newTimerRecords = TimerViewModel.fetchRecords(timersSharedPreferences);
-        TimerViewModel.setAllElementsFlagToFalse(newTimerRecords);
-        newTimerRecords.add(newRecord);
-        TimerViewModel.updateRecordsInSharedPreferences(timersSharedPreferences, newTimerRecords);
-    }
 
 
     public void chooseBackgroundClickable(View view) {
@@ -299,7 +290,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
                                     case GRADIENT_BACKGROUND:
 
                                         changePreviewToGradientPreview();
-                                        timerRecord.setBackgroundTheme(BackgroundTheme.GRADIENT);
+                                        newTimerRecord.setBackgroundTheme(BackgroundTheme.GRADIENT);
                                         Log.d("CREATE-OK", "theme was set to gradient");
 
                                         break;
@@ -307,15 +298,15 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
                                         Log.d("CREATE-OK", "theme was set to image");
                                         changePreviewToUserSetPreviewAndStoreImageFileInMemory();
-                                        timerRecord.setBackgroundTheme(BackgroundTheme.PICTURE);
+                                        newTimerRecord.setBackgroundTheme(BackgroundTheme.PICTURE);
 
                                         break;
                                     case SOLID_BACKGROUND:
 
                                         Log.d("CREATE-OK", "theme was set to solid");
                                         changePreviewToSolidPreview();
-                                        timerRecord.setBackGroundColor(colorSelectedByUser);
-                                        timerRecord.setBackgroundTheme(BackgroundTheme.SOLID);
+                                        newTimerRecord.setBackGroundColor(colorSelectedByUser);
+                                        newTimerRecord.setBackgroundTheme(BackgroundTheme.SOLID);
 
                                         break;
                                     default:
@@ -353,7 +344,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
         Bitmap scaledBitmap = BitmapHelper.scaleImageCenteredCrop(userSelectedBitmap, screenHeight, screenWidth);
         backgroundImagePreview.setImageBitmap(scaledBitmap);
-        TimerViewModel.saveImageToInternalStorage(scaledBitmap, new ContextWrapper(getApplicationContext()), timerRecord);
+        timerViewModel.saveImageToInternalStorage(scaledBitmap, new ContextWrapper(getApplicationContext()), newTimerRecord);
     }
 
     private void changePreviewToGradientPreview() {

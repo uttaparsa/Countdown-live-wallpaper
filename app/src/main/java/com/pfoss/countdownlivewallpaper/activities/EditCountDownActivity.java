@@ -1,10 +1,8 @@
 package com.pfoss.countdownlivewallpaper.activities;
 
-import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -32,14 +30,11 @@ import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
 import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 
-import java.util.ArrayList;
-
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class EditCountDownActivity extends AppCompatActivity {
-    private SharedPreferences timersSharedPreferences;
-    private ArrayList<TimerRecord> timerRecords;
-    private TimerRecord currentRecord;
+    private TimerRecord timerToEdit;
+    private TimerViewModel timerViewModel;
     CardView textViewFrame;
     TextView textColorPreviewTextView;
     private Bitmap userSelectedBitmap;
@@ -55,9 +50,10 @@ public class EditCountDownActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_count_down);
-        loadRecords();
+        timerViewModel = new TimerViewModel(getApplicationContext());
+        loadTimerRecords();
         initializeToolbar();
-        selectedUnits = currentRecord.getActiveShowUnits().getActiveShowUnitsBoolArray();
+        selectedUnits = timerToEdit.getActiveShowUnits().getActiveShowUnitsBoolArray();
         backgroundPicker = new BackgroundPicker(this);
 
         textViewFrame = findViewById(R.id.textColorPreviewBackground);
@@ -67,9 +63,9 @@ public class EditCountDownActivity extends AppCompatActivity {
     }
 
     private void updateTextColorPreview() {
-        textColorPreviewTextView.setTextColor(currentRecord.getTextColor());
-        setTextViewDrawableColor(textColorPreviewTextView, currentRecord.getTextColor());
-        textViewFrame.setCardBackgroundColor(currentRecord.getBackGroundColor());
+        textColorPreviewTextView.setTextColor(timerToEdit.getTextColor());
+        setTextViewDrawableColor(textColorPreviewTextView, timerToEdit.getTextColor());
+        textViewFrame.setCardBackgroundColor(timerToEdit.getBackGroundColor());
 
     }
 
@@ -86,11 +82,8 @@ public class EditCountDownActivity extends AppCompatActivity {
     }
 
 
-    private void loadRecords() {
-        timersSharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
-        timerRecords = TimerViewModel.fetchRecords(timersSharedPreferences);
-        currentRecord = TimerViewModel.getPriorToShowRecord(timerRecords);
-
+    private void loadTimerRecords() {
+        timerToEdit = timerViewModel.getLastSelectedTimer();
     }
 
 
@@ -99,7 +92,7 @@ public class EditCountDownActivity extends AppCompatActivity {
             @Override
             public void onOk(AmbilWarnaDialog dialog, int color) {
                 // color is the color selected by the user.
-                currentRecord.setTextColor(color);
+                timerToEdit.setTextColor(color);
                 updateTextColorPreview();
                 changedBeenMade = true;
             }
@@ -162,21 +155,21 @@ public class EditCountDownActivity extends AppCompatActivity {
                                 switch (itemSelected) {
                                     case GRADIENT_BACKGROUND:
 
-                                        currentRecord.setBackgroundTheme(BackgroundTheme.GRADIENT);
+                                        timerToEdit.setBackgroundTheme(BackgroundTheme.GRADIENT);
                                         Log.d("CREATE-OK", "theme was set to gradient");
 
                                         break;
                                     case IMAGE_BACKGROUND:
                                         saveImageFile();
                                         Log.d("CREATE-OK", "theme was set to image");
-                                        currentRecord.setBackgroundTheme(BackgroundTheme.PICTURE);
+                                        timerToEdit.setBackgroundTheme(BackgroundTheme.PICTURE);
 
                                         break;
                                     case SOLID_BACKGROUND:
 
                                         Log.d("CREATE-OK", "theme was set to solid");
-                                        currentRecord.setBackGroundColor(userSelectedColor);
-                                        currentRecord.setBackgroundTheme(BackgroundTheme.SOLID);
+                                        timerToEdit.setBackGroundColor(userSelectedColor);
+                                        timerToEdit.setBackgroundTheme(BackgroundTheme.SOLID);
 
                                         break;
                                     default:
@@ -224,14 +217,14 @@ public class EditCountDownActivity extends AppCompatActivity {
         Log.d("CREATE", "screen height is :" + screenHeight + " screen width is " + screenWidth);
 
         Bitmap scaledBitmap = BitmapHelper.scaleImageCenteredCrop(userSelectedBitmap, screenHeight, screenWidth);
-        TimerViewModel.saveImageToInternalStorage(scaledBitmap, new ContextWrapper(getApplicationContext()), currentRecord);
+        timerViewModel.saveImageToInternalStorage(scaledBitmap, new ContextWrapper(getApplicationContext()), timerToEdit);
     }
 
     @Override
     public void finish() {
         super.finish();
         if (changedBeenMade) {
-            TimerViewModel.updateRecordsInSharedPreferences(timersSharedPreferences, timerRecords);
+            timerViewModel.updateRecordsInSharedPreferences();
         }
 
     }
@@ -262,7 +255,7 @@ public class EditCountDownActivity extends AppCompatActivity {
     public void setActiveUnits(View view) {
 
         MultiSelectDialog activeUnitsSelectDialog = new MultiSelectDialog(unitChoiceClickListener, unitChoiceOkButtonListener);
-        activeUnitsSelectDialog.setCheckedItems(currentRecord.getActiveShowUnits().getActiveShowUnitsBoolArray());
+        activeUnitsSelectDialog.setCheckedItems(timerToEdit.getActiveShowUnits().getActiveShowUnitsBoolArray());
         activeUnitsSelectDialog.show(this.getSupportFragmentManager(), "selectTag");
     }
 
@@ -277,10 +270,10 @@ public class EditCountDownActivity extends AppCompatActivity {
     DialogInterface.OnClickListener unitChoiceOkButtonListener = new DialogInterface.OnClickListener() {//On positive button click listener
         @Override
         public void onClick(DialogInterface dialogInterface, int i) {
-            Log.d("unitChoiceOk", "onClick: changing active units: " + currentRecord.getActiveShowUnits().toString());
-            currentRecord.getActiveShowUnits().setActiveShowUnits(selectedUnits);
+            Log.d("unitChoiceOk", "onClick: changing active units: " + timerToEdit.getActiveShowUnits().toString());
+            timerToEdit.getActiveShowUnits().setActiveShowUnits(selectedUnits);
             changedBeenMade = true;
-            Log.d("unitChoiceOk", "onClick: changing active units: " + currentRecord.getActiveShowUnits().toString());
+            Log.d("unitChoiceOk", "onClick: changing active units: " + timerToEdit.getActiveShowUnits().toString());
         }
     };
 
