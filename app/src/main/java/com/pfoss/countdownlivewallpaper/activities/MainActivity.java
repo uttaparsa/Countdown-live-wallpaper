@@ -1,18 +1,10 @@
 package com.pfoss.countdownlivewallpaper.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.preference.PreferenceManager;
-
 import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.graphics.PixelFormat;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,10 +14,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.preference.PreferenceManager;
+
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.nightonke.boommenu.BoomButtons.ButtonPlaceEnum;
 import com.nightonke.boommenu.BoomButtons.HamButton;
@@ -33,9 +33,10 @@ import com.nightonke.boommenu.BoomButtons.OnBMClickListener;
 import com.nightonke.boommenu.BoomMenuButton;
 import com.nightonke.boommenu.ButtonEnum;
 import com.nightonke.boommenu.Piece.PiecePlaceEnum;
+import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.fragments.CountDownDisplayFragment;
 import com.pfoss.countdownlivewallpaper.services.CountDownWallpaperService;
-import com.pfoss.countdownlivewallpaper.R;
+import com.pfoss.countdownlivewallpaper.utils.RuntimeTools;
 
 import java.util.Locale;
 
@@ -99,6 +100,12 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        Window window = getWindow();
+        window.setFormat(PixelFormat.RGBA_8888);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         initializeToolbar();
 
         //save navigation bar height to memory , will be used in drawer
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt("navbar_height", getNavigationBarHeight()).apply();
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt("navbar_height", RuntimeTools.getNavigationBarHeight(this)).apply();
 
         boomMenuButton = findViewById(R.id.boomMenuButton);
         buildHamButtons();
@@ -130,8 +137,9 @@ public class MainActivity extends AppCompatActivity {
                 toggle();
             }
         });
-        if (isFirstRun()) {
+        if (RuntimeTools.isFirstRun(this)) {
             showIntro();
+            RuntimeTools.markFirstRun(this);
         }
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
@@ -140,14 +148,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean isFirstRun() {
-        SharedPreferences sharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
-        if (sharedPreferences.getBoolean("firstrun", true)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     private void showIntro() {
         new ShowcaseView.Builder(this)
@@ -316,20 +316,6 @@ public class MainActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    private int getNavigationBarHeight() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            DisplayMetrics metrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(metrics);
-            int usableHeight = metrics.heightPixels;
-            getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
-            int realHeight = metrics.heightPixels;
-            if (realHeight > usableHeight)
-                return realHeight - usableHeight;
-            else
-                return 0;
-        }
-        return 0;
-    }
 }
 
 

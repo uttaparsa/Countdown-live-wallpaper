@@ -3,7 +3,7 @@
     android:id="@+id/labelTextView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="label"
+    android:text="@string/label"
     android:textSize="7sp"
     android:alpha="0.80"
     android:layout_marginRight="1dp"

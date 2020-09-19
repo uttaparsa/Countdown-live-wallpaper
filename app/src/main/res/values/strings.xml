@@ -23,7 +23,10 @@
     <string name="image_theme_option">Image</string>
     <string name="solid_color_theme_option">Solid Color</string>
     <string name="choose_theme_dialog_title">Choose Theme</string>
-
+    <string name="image_not_found_error">Image not found!</string>
+    <string name="image_crop_support_error">Your phone does not support image crop!</string>
+    <string name="image_crop_permission_denied">Image crop permission denied</string>
+    <string name="selected_image_saved">Selected image saved</string>
 
     <!-- Set as wallpaper error toast -->
     <string name="no_timer_yet">Create a timer first</string>
@@ -80,6 +83,13 @@
     <string name="widget_configuration_activity">Select Countdown</string>
     <string name="timer_name">Timer Name</string>
     <string name="timer_date">Timer Date</string>
+
+    <!-- Others -->
+    <string name="activity_failed">activity_failed</string>
+    <string name="label">label</string>
+    <string name="sampletext">SampleText</string>
+    <string name="units">units</string>
+    <string name="remaining">remaining</string>
 
 
 </resources>

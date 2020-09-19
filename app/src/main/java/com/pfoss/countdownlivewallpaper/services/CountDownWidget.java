@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -16,7 +15,7 @@ import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.activities.MainActivity;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.themes.WidgetStyles;
-import com.pfoss.countdownlivewallpaper.utils.RecordManager;
+import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 import com.pfoss.countdownlivewallpaper.utils.UnitType;
 
 import java.util.ArrayList;
@@ -92,7 +91,7 @@ public class CountDownWidget extends AppWidgetProvider {
     private TimerRecord getCurrent(Context context, int widgetId) {
         TimerRecord countDown = null;
         SharedPreferences timersSharedPreferences = context.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
-        ArrayList<TimerRecord> timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
+        ArrayList<TimerRecord> timerRecords = TimerViewModel.fetchRecords(timersSharedPreferences);
 
         int currentCountDownIndexInRecordsArray = timersSharedPreferences.getInt(String.valueOf(widgetId), -1);
         Log.d(TAG, "getCurrent: currentCountDownIndexInRecordsArray value is : " + currentCountDownIndexInRecordsArray);

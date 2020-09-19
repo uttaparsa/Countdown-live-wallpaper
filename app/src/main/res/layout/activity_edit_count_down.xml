@@ -31,36 +31,21 @@
             android:id="@+id/textColorPreviewBackground"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:gravity="center"
             android:onClick="setTextColorClickable"
             app:cardCornerRadius="10dp">
 
-            <LinearLayout
+
+            <TextView
+                android:id="@+id/textColorPreview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/colorizeIconView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="18dp"
-                    android:layout_marginLeft="18dp"
-                    android:contentDescription="icon of select color"
-                    app:srcCompat="@drawable/ic_baseline_colorize_24" />
-
-                <TextView
-                    android:id="@+id/textColorPreview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginLeft="18dp"
-                    android:text="@string/preview"
-                    android:textColor="@color/white"
-                    android:textSize="30sp" />
-
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="14dp"
+                android:drawableStart="@drawable/ic_baseline_colorize_30"
+                android:drawablePadding="8dp"
+                android:text="@string/preview"
+                android:textColor="@color/blue"
+                android:textSize="30sp" />
 
 
         </androidx.cardview.widget.CardView>
@@ -79,37 +64,23 @@
             android:layout_height="60dp"
             android:layout_marginTop="10dp"
             android:background="@android:color/transparent"
-            android:gravity="center"
             android:onClick="setBackgroundClickable"
             app:cardCornerRadius="8dp">
 
-            <LinearLayout
+
+            <TextView
+                android:id="@+id/material_text_button"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="14dp"
+                android:drawableStart="@drawable/ic_baseline_photo_24"
+                android:drawablePadding="8dp"
+                android:text="@string/change_background"
+                android:textColor="@color/colorPrimary"
+                android:textSize="22sp"
+                app:drawableTint="@color/colorPrimary" />
 
-                <ImageView
-                    android:id="@+id/backGroundIconView"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="18dp"
-                    android:layout_marginLeft="18dp"
-                    android:tint="@color/colorAccent"
-                    app:srcCompat="@drawable/ic_baseline_photo_24" />
-
-                <TextView
-                    android:id="@+id/material_text_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginLeft="14dp"
-                    android:text="@string/change_background"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="22sp" />
-
-
-            </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
@@ -127,37 +98,23 @@
             android:layout_height="60dp"
             android:layout_marginTop="10dp"
             android:background="@android:color/transparent"
-            android:gravity="center"
-            android:onClick="setBackgroundClickable"
+            android:onClick="setActiveUnits"
             app:cardCornerRadius="8dp">
 
-            <LinearLayout
+
+            <TextView
+                android:id="@+id/material_set_units_button"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="14dp"
+                android:drawableStart="@drawable/ic_baseline_calendar_today_24"
+                android:drawablePadding="8dp"
+                android:text="@string/set_units"
+                android:textColor="@color/colorPrimary"
+                android:textSize="22sp"
+                app:drawableTint="@color/colorPrimary" />
 
-                <ImageView
-                    android:id="@+id/setUnitsIconView"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="18dp"
-                    android:layout_marginLeft="18dp"
-                    android:tint="@color/colorAccent"
-                    app:srcCompat="@drawable/ic_baseline_calendar_today_24" />
-
-                <TextView
-                    android:id="@+id/material_set_units_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginLeft="14dp"
-                    android:text="@string/set_units"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="22sp" />
-
-
-            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
         <androidx.constraintlayout.widget.Guideline

@@ -1,8 +1,6 @@
 package com.pfoss.countdownlivewallpaper.utils;
 
 
-import android.graphics.Color;
-
 import com.pfoss.countdownlivewallpaper.R;
 
 public enum UnitType  {
@@ -14,11 +12,12 @@ public enum UnitType  {
    SECOND ("second");
    private final String name;
 
-   private UnitType(String s) {
-      name = s;
+   UnitType(String s) {
+       name = s;
    }
+
    public String toString() {
-      return  this.name;
+       return this.name;
    }
    public int getStringResource(){
       switch (this.name){

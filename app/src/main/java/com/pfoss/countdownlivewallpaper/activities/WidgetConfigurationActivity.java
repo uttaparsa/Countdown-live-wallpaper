@@ -3,7 +3,6 @@ package com.pfoss.countdownlivewallpaper.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -18,7 +17,7 @@ import android.widget.ListView;
 import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.services.CountDownWidget;
-import com.pfoss.countdownlivewallpaper.utils.RecordManager;
+import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 
 import java.util.ArrayList;
 
@@ -103,6 +102,6 @@ public class WidgetConfigurationActivity extends AppCompatActivity {
 
     private void initRecords() {
         packageSharedPreferences = getSharedPreferences("com.pfoss.countdownlivewallpaper", MODE_PRIVATE);
-        records = RecordManager.fetchRecords(packageSharedPreferences);
+        records = TimerViewModel.fetchRecords(packageSharedPreferences);
     }
 }

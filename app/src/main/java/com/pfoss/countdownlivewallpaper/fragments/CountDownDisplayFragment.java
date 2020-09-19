@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.pfoss.countdownlivewallpaper.CountDownDrawer;
 import com.pfoss.countdownlivewallpaper.R;
-import com.pfoss.countdownlivewallpaper.utils.RecordManager;
+import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 
 import java.util.ArrayList;
@@ -122,8 +122,8 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
     private void loadRecords( ) {
 
         timersSharedPreferences = this.getActivity().getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
-        timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
-        currentRecord = RecordManager.getPriorToShowRecord(timerRecords);
+        timerRecords = TimerViewModel.fetchRecords(timersSharedPreferences);
+        currentRecord = TimerViewModel.getPriorToShowRecord(timerRecords);
         Log.d(TAG, " reloading records");
     }
 
@@ -142,7 +142,7 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
                     Toast.LENGTH_SHORT)
                     .show();
             drawer.stop();
-            RecordManager.deleteRecord(timersSharedPreferences, timerRecords, currentRecord);
+            TimerViewModel.deleteRecord(timersSharedPreferences, timerRecords, currentRecord);
             loadRecords();
             if (!timerRecords.isEmpty()) {
                 startDrawer();
@@ -163,9 +163,9 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
                 Log.d(TAG, "drawTimer: no drawer found but it's ok :)");
             }
 
-            RecordManager.setAllElementsFlagToFalse(timerRecords);
+            TimerViewModel.setAllElementsFlagToFalse(timerRecords);
             timerRecords.get(index).setPriorToShow(true);
-            RecordManager.updateRecordsInSharedPreferences(timersSharedPreferences, timerRecords);
+            TimerViewModel.updateRecordsInSharedPreferences(timersSharedPreferences, timerRecords);
             loadRecords();
             startDrawer();
             Log.d("DISPLAY", "called drawTimer ");

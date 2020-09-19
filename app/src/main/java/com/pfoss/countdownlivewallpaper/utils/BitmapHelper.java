@@ -1,7 +1,12 @@
 package com.pfoss.countdownlivewallpaper.utils;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Log;
+
+import java.io.FileNotFoundException;
 
 public class BitmapHelper {
     public static Bitmap scaleImageCenteredCrop(Bitmap sourceBitmap, int targetHeight, int targetWidth) {
@@ -38,10 +43,21 @@ public class BitmapHelper {
         } else {
 
             Log.i("SCALER", "case 2");
-            Double someVal = targetHeight / pictureRatio;
-            destinationBitmap = Bitmap.createScaledBitmap(sourceBitmap, someVal.intValue(), targetHeight, false);
+            double someVal = targetHeight / pictureRatio;
+            destinationBitmap = Bitmap.createScaledBitmap(sourceBitmap, (int) someVal, targetHeight, false);
         }
         return destinationBitmap;
+    }
+
+    public static Bitmap decodeUriAsBitmap(Uri uri, Activity caller) {
+        Bitmap bitmap;
+        try {
+            bitmap = BitmapFactory.decodeStream(caller.getContentResolver().openInputStream(uri));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return bitmap;
     }
 
 

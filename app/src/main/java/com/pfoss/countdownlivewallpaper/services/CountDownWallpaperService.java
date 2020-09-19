@@ -7,7 +7,7 @@ import android.view.SurfaceHolder;
 
 import com.pfoss.countdownlivewallpaper.CountDownDrawer;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
-import com.pfoss.countdownlivewallpaper.utils.RecordManager;
+import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 
 import java.util.ArrayList;
 
@@ -19,8 +19,8 @@ TimerRecord currentRecord;
 
     public void loadRecords() {
         sharedPreferences = getSharedPreferences("com.pfoss.countdownlivewallpaper", MODE_PRIVATE);
-        timerRecords = RecordManager.fetchRecords(sharedPreferences);
-        currentRecord = RecordManager.getPriorToShowRecord(timerRecords);
+        timerRecords = TimerViewModel.fetchRecords(sharedPreferences);
+        currentRecord = TimerViewModel.getPriorToShowRecord(timerRecords);
     }
 
     private CountDownDrawer drawer;

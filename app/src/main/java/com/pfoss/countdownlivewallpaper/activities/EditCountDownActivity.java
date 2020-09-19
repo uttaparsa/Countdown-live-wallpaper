@@ -1,12 +1,5 @@
 package com.pfoss.countdownlivewallpaper.activities;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
-import androidx.core.graphics.drawable.DrawableCompat;
-
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -14,28 +7,32 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.core.graphics.drawable.DrawableCompat;
+
 import com.pfoss.countdownlivewallpaper.R;
-import com.pfoss.countdownlivewallpaper.data.ActiveShowUnits;
 import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.dialogs.MultiSelectDialog;
+import com.pfoss.countdownlivewallpaper.services.BackgroundPicker;
+import com.pfoss.countdownlivewallpaper.services.ImagePickerException;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
-import com.pfoss.countdownlivewallpaper.utils.RecordManager;
+import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
+import com.theartofdev.edmodo.cropper.CropImage;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
@@ -45,45 +42,54 @@ public class EditCountDownActivity extends AppCompatActivity {
     private TimerRecord currentRecord;
     CardView textViewFrame;
     TextView textColorPreviewTextView;
-    FrameLayout backgroundViewFrame;
-    ImageView colorizeIconView;
-    ImageView backGroundIconView;
     private Bitmap userSelectedBitmap;
     private int userSelectedColor;
     boolean changedBeenMade = false;
     private int itemSelected;
+    private BackgroundPicker backgroundPicker;
     public static final int GRADIENT_BACKGROUND = 0;
     public static final int IMAGE_BACKGROUND = 1;
     public static final int SOLID_BACKGROUND = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_count_down);
-        textViewFrame = findViewById(R.id.textColorPreviewBackground);
-        textColorPreviewTextView = findViewById(R.id.textColorPreview);
-        backgroundViewFrame = findViewById(R.id.backgroundPreview);
-        colorizeIconView = findViewById(R.id.colorizeIconView);
-        backGroundIconView = findViewById(R.id.backGroundIconView);
-
         loadRecords();
-        initTextColorPreview();
         initializeToolbar();
         selectedUnits = currentRecord.getActiveShowUnits().getActiveShowUnitsBoolArray();
+        backgroundPicker = new BackgroundPicker(this);
+
+        textViewFrame = findViewById(R.id.textColorPreviewBackground);
+        textColorPreviewTextView = findViewById(R.id.textColorPreview);
+        updateTextColorPreview();
+
     }
 
-    private void initTextColorPreview() {
-
+    private void updateTextColorPreview() {
         textColorPreviewTextView.setTextColor(currentRecord.getTextColor());
+        setTextViewDrawableColor(textColorPreviewTextView, currentRecord.getTextColor());
         textViewFrame.setCardBackgroundColor(currentRecord.getBackGroundColor());
-        DrawableCompat.setTint(colorizeIconView.getDrawable(), currentRecord.getTextColor());
+
     }
 
+    private void setTextViewDrawableColor(TextView textView, int color) {
+        for (Drawable drawable : textView.getCompoundDrawablesRelative()) {
+            Log.d("EDIT", "setTextViewDrawableColor: found one");
+            if (drawable != null)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    drawable.setTint(color);
+                } else {
+                    DrawableCompat.setTint(DrawableCompat.wrap(drawable), color);
+                }
+        }
+    }
 
 
     private void loadRecords() {
         timersSharedPreferences = this.getSharedPreferences("com.pfoss.countdownlivewallpaper", Context.MODE_PRIVATE);
-        timerRecords = RecordManager.fetchRecords(timersSharedPreferences);
-        currentRecord = RecordManager.getPriorToShowRecord(timerRecords);
+        timerRecords = TimerViewModel.fetchRecords(timersSharedPreferences);
+        currentRecord = TimerViewModel.getPriorToShowRecord(timerRecords);
 
     }
 
@@ -94,7 +100,7 @@ public class EditCountDownActivity extends AppCompatActivity {
             public void onOk(AmbilWarnaDialog dialog, int color) {
                 // color is the color selected by the user.
                 currentRecord.setTextColor(color);
-                initTextColorPreview();
+                updateTextColorPreview();
                 changedBeenMade = true;
             }
 
@@ -106,7 +112,8 @@ public class EditCountDownActivity extends AppCompatActivity {
         colorSelectDialog.show();
 
     }
-    public void setBackgroundClickable(View view){
+
+    public void setBackgroundClickable(View view) {
         final View passView = view;
         String[] themeChoiceItems = getResources().getStringArray(R.array._choose_timer_theme_dialog_multi_choice_array);
         itemSelected = 0;
@@ -121,8 +128,7 @@ public class EditCountDownActivity extends AppCompatActivity {
 
                                 break;
                             case IMAGE_BACKGROUND:
-                                Intent imagePickIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                startActivityForResult(imagePickIntent, 1);
+                                backgroundPicker.startCropImageActivity();
                                 break;
                             case SOLID_BACKGROUND:
                                 AmbilWarnaDialog dialog = new AmbilWarnaDialog(passView.getContext(), R.attr.colorPrimary, new AmbilWarnaDialog.OnAmbilWarnaListener() {
@@ -193,15 +199,20 @@ public class EditCountDownActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            Uri selectedImage = data.getData();
+        if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE) {
+            backgroundPicker.imagePicker(requestCode, resultCode, data);
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             try {
-                userSelectedBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-
-            } catch (Exception e) {
+                userSelectedBitmap = BitmapHelper.decodeUriAsBitmap(backgroundPicker.imageFetch(requestCode, resultCode, data), this);
+            } catch (ImagePickerException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE || requestCode == CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE) {
+            backgroundPicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -210,19 +221,21 @@ public class EditCountDownActivity extends AppCompatActivity {
 
         int screenWidth = metrics.widthPixels;
         int screenHeight = metrics.heightPixels + getNavigationBarHeight();
-        Log.d("CREATE" , "screen height is :" + screenHeight + " screen width is " + screenWidth);
+        Log.d("CREATE", "screen height is :" + screenHeight + " screen width is " + screenWidth);
 
         Bitmap scaledBitmap = BitmapHelper.scaleImageCenteredCrop(userSelectedBitmap, screenHeight, screenWidth);
-        RecordManager.saveImageToInternalStorage(scaledBitmap, new ContextWrapper(getApplicationContext()), currentRecord);
+        TimerViewModel.saveImageToInternalStorage(scaledBitmap, new ContextWrapper(getApplicationContext()), currentRecord);
     }
+
     @Override
     public void finish() {
         super.finish();
         if (changedBeenMade) {
-            RecordManager.updateRecordsInSharedPreferences(timersSharedPreferences, timerRecords);
+            TimerViewModel.updateRecordsInSharedPreferences(timersSharedPreferences, timerRecords);
         }
 
     }
+
     private int getNavigationBarHeight() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             DisplayMetrics metrics = new DisplayMetrics();
@@ -237,6 +250,7 @@ public class EditCountDownActivity extends AppCompatActivity {
         }
         return 0;
     }
+
     private void initializeToolbar() {
         Toolbar toolbar;
         toolbar = findViewById(R.id.toolbar);
@@ -247,10 +261,11 @@ public class EditCountDownActivity extends AppCompatActivity {
 
     public void setActiveUnits(View view) {
 
-        MultiSelectDialog activeUnitsSelectDialog = new MultiSelectDialog(unitChoiceClickListener , unitChoiceOkButtonListener);
+        MultiSelectDialog activeUnitsSelectDialog = new MultiSelectDialog(unitChoiceClickListener, unitChoiceOkButtonListener);
         activeUnitsSelectDialog.setCheckedItems(currentRecord.getActiveShowUnits().getActiveShowUnitsBoolArray());
-        activeUnitsSelectDialog.show(this.getSupportFragmentManager(),"selectTag");
+        activeUnitsSelectDialog.show(this.getSupportFragmentManager(), "selectTag");
     }
+
     boolean[] selectedUnits;
     DialogInterface.OnMultiChoiceClickListener unitChoiceClickListener = new DialogInterface.OnMultiChoiceClickListener() {
         @Override
@@ -262,10 +277,10 @@ public class EditCountDownActivity extends AppCompatActivity {
     DialogInterface.OnClickListener unitChoiceOkButtonListener = new DialogInterface.OnClickListener() {//On positive button click listener
         @Override
         public void onClick(DialogInterface dialogInterface, int i) {
-            Log.d("unitChoiceOk", "onClick: changing active units: "+currentRecord.getActiveShowUnits().toString());
+            Log.d("unitChoiceOk", "onClick: changing active units: " + currentRecord.getActiveShowUnits().toString());
             currentRecord.getActiveShowUnits().setActiveShowUnits(selectedUnits);
             changedBeenMade = true;
-            Log.d("unitChoiceOk", "onClick: changing active units: "+currentRecord.getActiveShowUnits().toString());
+            Log.d("unitChoiceOk", "onClick: changing active units: " + currentRecord.getActiveShowUnits().toString());
         }
     };
 

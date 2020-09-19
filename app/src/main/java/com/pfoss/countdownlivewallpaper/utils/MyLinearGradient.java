@@ -1,9 +1,14 @@
 package com.pfoss.countdownlivewallpaper.utils;
 
+import android.graphics.Color;
 import android.graphics.LinearGradient;
+import android.graphics.Paint;
 import android.graphics.Shader;
+import android.util.Log;
 
-public class MyLinearGradient extends Gradient {
+import static com.pfoss.countdownlivewallpaper.utils.Gradient.getRandomColor;
+
+public class MyLinearGradient extends Paint {
     private int startColor;
     private int endColor;
     private float x0;
@@ -15,16 +20,17 @@ public class MyLinearGradient extends Gradient {
                             float y0,
                             float x1,
                             float y1,
-    Shader.TileMode tile){
+    Shader.TileMode tile) {
         this.x0 = x0;
         this.y0 = y0;
         this.x1 = x1;
         this.y1 = y1;
-        this.startColor = getRandomColor();
-        this.endColor = getRandomColor();
-
-
+        RandomBeautifulColor rbc = new RandomBeautifulColor();
+        this.startColor = rbc.getColor();
+        this.endColor = rbc.getColor();
         this.setShader(new LinearGradient(x0, y0, x1, y1, startColor, endColor, tile));
+        this.setAntiAlias(true);
+        this.setDither(true);
     }
 
     public int getEndColor() {

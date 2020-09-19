@@ -7,9 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.WindowManager;
-import android.widget.RelativeLayout;
+import android.os.Handler;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
@@ -18,8 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
-import com.pfoss.countdownlivewallpaper.themes.Style;
-import com.pfoss.countdownlivewallpaper.utils.RecordManager;
+import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 
 import java.util.ArrayList;
 
@@ -28,6 +25,7 @@ public class TimerListActivity extends AppCompatActivity {
     private RecyclerView mTimersListRecyclerView;
     private TimerListAdapter mTimersListAdapter;
     private RecyclerView.LayoutManager mTimersListLayoutManager;
+    private Handler handler;
 
 
     @Override
@@ -51,14 +49,23 @@ public class TimerListActivity extends AppCompatActivity {
                 requestToShowTimer(position);
             }
         });
+        handler = new Handler();
 
+        final Runnable timersThread = new Runnable() {
+            public void run() {
+                mTimersListAdapter.notifyDataSetChanged();
+                handler.postDelayed(this, 1000);
+            }
+        };
+
+        handler.post(timersThread);
 
 
     }
 
     private void initRecords() {
         SharedPreferences packageSharedPreferences = getSharedPreferences("com.pfoss.countdownlivewallpaper", MODE_PRIVATE);
-        timersData = RecordManager.fetchRecords(packageSharedPreferences);
+        timersData = TimerViewModel.fetchRecords(packageSharedPreferences);
     }
     private void initializeToolbar() {
         Toolbar toolbar;

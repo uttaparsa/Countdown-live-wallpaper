@@ -1,11 +1,17 @@
 package com.pfoss.countdownlivewallpaper;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -43,7 +49,7 @@ public class CountDownDrawer {
     private TimerRecord currentRecord;
     private SurfaceHolder holder;
     private boolean visible;
-    private Gradient gradient;
+    private Paint gradient;
     private Runnable runnable;
     private Paint unitsStyle;
     private Paint numbersStyle;
@@ -57,7 +63,7 @@ public class CountDownDrawer {
     private int screenHeightInPixels;
     private CountDownWallpaperService.Engine wallEngine;
 
-    public CountDownDrawer(Context context, TimerRecord currentRecord,CountDownWallpaperService.Engine wallEngine) {//Constructor for live wallpaper
+    public CountDownDrawer(Context context, TimerRecord currentRecord, CountDownWallpaperService.Engine wallEngine) {//Constructor for live wallpaper
         this.context = context;
         setCurrentRecord(currentRecord);
         this.wallEngine = wallEngine;
@@ -72,15 +78,11 @@ public class CountDownDrawer {
     public void setCurrentRecord(TimerRecord currentRecord) {
         this.currentRecord = currentRecord;
         Log.d(TAG, "setCurrentRecord: current record active unit s" + this.currentRecord.getActiveShowUnits().toString());
-        if (currentRecord.getBackgroundTheme() == BackgroundTheme.GRADIENT) {
-            initGradient();
-            FPS = 10;
-        } else {
-            FPS = 1;
-        }
+        convertDipToPixel();
+        if (currentRecord.getBackgroundTheme() == BackgroundTheme.GRADIENT) initGradient();
         initStyles();
         initRunnable();
-        convertDipToPixel();
+
         Log.d(TAG, "setCurrentRecord: current record active unit s" + this.currentRecord.getActiveShowUnits().toString());
 
     }
@@ -115,8 +117,8 @@ public class CountDownDrawer {
                 GRADIENT_START_Y_AXIS,
                 GRADIENT_END_X_AXIS,
                 GRADIENT_END_Y_AXIS,
-                Shader.TileMode.CLAMP);
-        gradient.setAntiAlias(true);
+                Shader.TileMode.MIRROR);
+
         Log.i(TAG, "gradient initialized");
 
     }
@@ -135,7 +137,7 @@ public class CountDownDrawer {
     }
 
     private void drawPage() {
-        if(this.wallEngine != null){
+        if (this.wallEngine != null) {
             holder = wallEngine.getSurfaceHolder();
         }
         canvas = null;
@@ -184,12 +186,12 @@ public class CountDownDrawer {
 
     private void drawTime() {
         String time = DateFormat.getTimeInstance().format(currentRecord.getDateInstance());
-        if(isPersian) time = removeSeconds(time);
+        if (isPersian) time = removeSeconds(time);
         canvas.drawText(time, CLOCK_X_AXIS, CLOCK_Y_AXIS, dateAndTimeStyle);
     }
 
     private String removeSeconds(String time) {
-        return time.substring(0 , time.length()-3);
+        return time.substring(0, time.length() - 3);
     }
 
 
@@ -316,18 +318,19 @@ public class CountDownDrawer {
 
     private void drawGradientBackground(Canvas canvas) {
         Log.v(TAG, "Drawing gradient background");
-        canvas.drawRect(new RectF(0, 0, GRADIENT_END_X_AXIS, GRADIENT_END_Y_AXIS), gradient);
-        updateGradient(gradient);
+        canvas.drawPaint(gradient);
+        updateGradient((MyLinearGradient) gradient);
+
 
     }
 
-    private void updateGradient(Gradient linearGradient) {
-        MyLinearGradient myLinearGradient = ((MyLinearGradient) linearGradient);
+    private void updateGradient(MyLinearGradient linearGradient) {
         int changeValue = 1;
-        Log.i(TAG, "gradient color is : " + myLinearGradient.getStartColor());
-        myLinearGradient.setStartColor(myLinearGradient.getStartColor() + changeValue);
-        myLinearGradient.setEndColor(myLinearGradient.getEndColor() - changeValue);
-        myLinearGradient.setAntiAlias(true);
+        Log.i(TAG, "gradient color is : " + linearGradient.getStartColor());
+        linearGradient.setStartColor(linearGradient.getStartColor() + changeValue);
+        linearGradient.setEndColor(linearGradient.getEndColor() + changeValue);
+        linearGradient.setAntiAlias(true);
+        linearGradient.setDither(true);
 
     }
 
@@ -398,10 +401,10 @@ public class CountDownDrawer {
         UNTIL_X_AXIS = screenWidthInPixels / 2;
         UNTIL_Y_AXIS = (DATE_Y_AXIS + CLOCK_Y_AXIS) / 2;
 
-
+        Log.d(TAG, "convertDipToPixel: screenHeightInPixels : " + screenHeightInPixels);
         GRADIENT_START_X_AXIS = 0;
         GRADIENT_START_Y_AXIS = 0;
-        GRADIENT_END_X_AXIS = screenWidthInPixels;
+        GRADIENT_END_X_AXIS = 0;
         GRADIENT_END_Y_AXIS = screenHeightInPixels;
 
 
