@@ -6,14 +6,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
 
-import com.pfoss.countdownlivewallpaper.utils.UnitType;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;

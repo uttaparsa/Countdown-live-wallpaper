@@ -3,13 +3,11 @@ package com.pfoss.countdownlivewallpaper.dialogs;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.pfoss.countdownlivewallpaper.R;
-import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 
 public class MultiSelectDialog extends DialogFragment {
     private static final String TAG = "MultiSelectDialog";

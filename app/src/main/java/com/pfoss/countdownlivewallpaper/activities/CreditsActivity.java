@@ -1,9 +1,9 @@
 package com.pfoss.countdownlivewallpaper.activities;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import android.os.Bundle;
 
 import com.pfoss.countdownlivewallpaper.R;
 

@@ -1,24 +1,19 @@
 package com.pfoss.countdownlivewallpaper.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pfoss.countdownlivewallpaper.R;
-import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
-
-import java.util.ArrayList;
 
 public class TimerListActivity extends AppCompatActivity {
     private RecyclerView mTimersListRecyclerView;

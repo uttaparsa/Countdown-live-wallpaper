@@ -14,8 +14,8 @@ import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.activities.MainActivity;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.themes.WidgetStyles;
-import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 import com.pfoss.countdownlivewallpaper.utils.UnitType;
+import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 
 import java.util.Calendar;
 import java.util.Locale;

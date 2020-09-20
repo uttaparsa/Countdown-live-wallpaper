@@ -2,10 +2,6 @@ package com.pfoss.countdownlivewallpaper.fragments;
 
 
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -15,12 +11,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.pfoss.countdownlivewallpaper.CountDownDrawer;
 import com.pfoss.countdownlivewallpaper.R;
-import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
-
-import java.util.ArrayList;
+import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 
 
 /**

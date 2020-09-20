@@ -1,24 +1,18 @@
 package com.pfoss.countdownlivewallpaper.activities;
 
 import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -27,20 +21,24 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
-import com.mohamadamin.persianmaterialdatetimepicker.time.RadialPickerLayout;
 import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
 import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
+import com.pfoss.countdownlivewallpaper.fragments.datepicker.DatePickerFragment;
+import com.pfoss.countdownlivewallpaper.fragments.datepicker.GregorianDatePicker;
+import com.pfoss.countdownlivewallpaper.fragments.datepicker.PersianDatePicker;
+import com.pfoss.countdownlivewallpaper.fragments.timepicker.GregorianTimePicker;
+import com.pfoss.countdownlivewallpaper.fragments.timepicker.PersianTimePicker;
+import com.pfoss.countdownlivewallpaper.fragments.timepicker.TimePickerFragment;
 import com.pfoss.countdownlivewallpaper.services.BackgroundPicker;
 import com.pfoss.countdownlivewallpaper.services.ImagePickerException;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
-import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 import com.pfoss.countdownlivewallpaper.utils.RuntimeTools;
+import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -48,15 +46,12 @@ import java.util.TimeZone;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
-public class CreateWallpaperActivity extends AppCompatActivity
-        implements DatePickerDialog.OnDateSetListener,
-        TimePickerDialog.OnTimeSetListener,
-        com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog.OnDateSetListener,
-        com.mohamadamin.persianmaterialdatetimepicker.time.TimePickerDialog.OnTimeSetListener {
+public class CreateWallpaperActivity extends AppCompatActivity {
 
 
     private static final String TAG = "CreateWallpaperActivity";
-    int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal, secondFinal;
+
+    private int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal, secondFinal;
     private EditText labelEditText;
     private Bitmap userSelectedBitmap;
     private int colorSelectedByUser;
@@ -64,7 +59,6 @@ public class CreateWallpaperActivity extends AppCompatActivity
     private ImageView backgroundImagePreview;
     private boolean hasUserSetDateAndTime = false;
     private boolean hasUserSetBackground = false;
-//    private Uri tempUri = null;
 
 
     private TimerRecord newTimerRecord;
@@ -76,6 +70,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
     public static final int IMAGE_BACKGROUND = 1;
     public static final int SOLID_BACKGROUND = 2;
     boolean isPersian = Locale.getDefault().getLanguage().equals(new Locale("fa").getLanguage());
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +85,12 @@ public class CreateWallpaperActivity extends AppCompatActivity
             public void onClick(View view) {
                 Log.i("GOT", "date button click");
                 if (isPersian) {
-                    displayPersianCalender();
+                    DatePickerFragment datePickerFragment = new PersianDatePicker(onGregorianDateSetListener);
+                    datePickerFragment.displayCalenderDialog(CreateWallpaperActivity.this);
                 } else {
-                    displayGregorianCalender();
+                    DatePickerFragment datePickerFragment = new GregorianDatePicker(onPersianDateSetListener);
+                    datePickerFragment.displayCalenderDialog(CreateWallpaperActivity.this);
                 }
-
 
             }
         });
@@ -104,30 +100,6 @@ public class CreateWallpaperActivity extends AppCompatActivity
         }
 
         backgroundPicker = new BackgroundPicker(this);
-    }
-
-    private void displayPersianCalender() {
-        PersianCalendar persianCalendar = new PersianCalendar();
-        com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog persianPickerDialog = com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog.newInstance(
-                CreateWallpaperActivity.this,
-                persianCalendar.getPersianYear(),
-                persianCalendar.getPersianMonth(),
-                persianCalendar.getPersianDay()
-        );
-        persianPickerDialog.show(getFragmentManager(), "persianPickerDialog");
-
-    }
-
-    private void displayGregorianCalender() {
-        Calendar today = Calendar.getInstance();
-        DatePickerDialog datePickerDialog;
-        datePickerDialog = new DatePickerDialog(CreateWallpaperActivity.this,
-                CreateWallpaperActivity.this,
-                today.get(Calendar.YEAR),
-                today.get(Calendar.MONTH),
-                today.get(Calendar.DAY_OF_MONTH));
-
-        datePickerDialog.show();
     }
 
 
@@ -147,58 +119,36 @@ public class CreateWallpaperActivity extends AppCompatActivity
         backgroundImagePreview = findViewById(R.id.backgroundImageView);
     }
 
+    private TimePickerFragment.OnTimeSetListener onTimeSetListener = new GregorianTimePicker.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(int hour, int minute) {
+            hourFinal = hour;
+            minuteFinal = minute;
+            hasUserSetDateAndTime = true;
+            Log.i("CREATE-TIMESET", "This is in order: " + yearFinal + " " + monthFinal + " " + dayFinal + " " + hourFinal + " " + minuteFinal + " ");
+        }
+    };
+    private DatePickerFragment.OnDateSetListener onGregorianDateSetListener = new DatePickerFragment.OnDateSetListener() {
+        @Override
+        public void onDateSet(int year, int month, int day) {
+            yearFinal = year;
+            monthFinal = month;
+            dayFinal = day;
 
-    @Override
-    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {//Gregorian calender picker listener
-        yearFinal = i;
-        monthFinal = i1;
-        dayFinal = i2;
-        Calendar newDate = Calendar.getInstance();
-        TimePickerDialog timePickerDialog;
-
-        timePickerDialog = new TimePickerDialog(CreateWallpaperActivity.this,
-                CreateWallpaperActivity.this,
-                newDate.get(Calendar.HOUR_OF_DAY),
-                newDate.get(Calendar.MINUTE),
-                DateFormat.is24HourFormat(this));
-
-        timePickerDialog.show();
-    }
-
-
-    @Override
-    public void onTimeSet(TimePicker timePicker, int i, int i1) {//Gregorian calender picker listener
-        hourFinal = i;
-        minuteFinal = i1;
-        hasUserSetDateAndTime = true;
-        Log.i("CREATE-TIMESET", "This is in order: " + yearFinal + " " + monthFinal + " " + dayFinal + " " + hourFinal + " " + minuteFinal + " ");
-    }
-
-    @Override
-    public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {//Persian calender date set listener
-        hourFinal = hourOfDay;
-        minuteFinal = minute;
-        hasUserSetDateAndTime = true;
-        Log.i("CREATE-TIMESET", "This is in order: " + yearFinal + " " + monthFinal + " " + dayFinal + " " + hourFinal + " " + minuteFinal + " ");
-    }
-
-    @Override
-    public void onDateSet(com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {//Persian calender date set listener
-        yearFinal = year;
-        monthFinal = monthOfYear;
-        dayFinal = dayOfMonth;
-        com.mohamadamin.persianmaterialdatetimepicker.time.TimePickerDialog persianTimePicker;
-        PersianCalendar now = new PersianCalendar();
-        persianTimePicker = com.mohamadamin.persianmaterialdatetimepicker.time.TimePickerDialog.newInstance(
-                CreateWallpaperActivity.this,
-                now.get(PersianCalendar.HOUR_OF_DAY),
-                now.get(PersianCalendar.MINUTE),
-                DateFormat.is24HourFormat(this));
-
-
-        persianTimePicker.show(getFragmentManager(), "persianTimePicker");
-
-    }
+            TimePickerFragment timePickerFragment = new GregorianTimePicker(onTimeSetListener);
+            timePickerFragment.displayTimePicker(CreateWallpaperActivity.this);
+        }
+    };
+    private DatePickerFragment.OnDateSetListener onPersianDateSetListener = new DatePickerFragment.OnDateSetListener() {
+        @Override
+        public void onDateSet(int year, int month, int day) {
+            yearFinal = year;
+            monthFinal = month;
+            dayFinal = day;
+            TimePickerFragment timePickerFragment = new PersianTimePicker(onTimeSetListener);
+            timePickerFragment.displayTimePicker(CreateWallpaperActivity.this);
+        }
+    };
 
     public void createNewTimerClickable(View view) {
         if (hasUserSetDateAndTime && hasUserSetBackground) {
@@ -210,7 +160,7 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
         } else if (!hasUserSetDateAndTime) {
             Toast.makeText(this, this.getString(R.string.toast_date_not_set), Toast.LENGTH_SHORT).show();
-        } else if (!hasUserSetBackground) {
+        } else {
             Toast.makeText(this, this.getString(R.string.toast_background_not_set), Toast.LENGTH_SHORT).show();
         }
 
@@ -236,7 +186,6 @@ public class CreateWallpaperActivity extends AppCompatActivity
         }
         timerRecord.setLabel(labelEditText.getText().toString());
     }
-
 
 
     public void chooseBackgroundClickable(View view) {
@@ -319,7 +268,6 @@ public class CreateWallpaperActivity extends AppCompatActivity
 
                         setNegativeButton(getResources().getString(R.string.cancel), null)
                 .
-
                         show();
 
     }
@@ -404,5 +352,6 @@ public class CreateWallpaperActivity extends AppCompatActivity
         return sdf.format(cal.getTime());
 
     }
+
 
 }

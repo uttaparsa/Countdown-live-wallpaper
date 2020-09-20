@@ -1,12 +1,8 @@
 package com.pfoss.countdownlivewallpaper.utils;
 
-import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
-import android.util.Log;
-
-import static com.pfoss.countdownlivewallpaper.utils.Gradient.getRandomColor;
 
 public class MyLinearGradient extends Paint {
     private int startColor;
