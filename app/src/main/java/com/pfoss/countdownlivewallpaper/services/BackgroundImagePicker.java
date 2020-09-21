@@ -14,16 +14,16 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import static android.app.Activity.RESULT_OK;
 
-public class BackgroundPicker {
+public class BackgroundImagePicker {
     Activity mCallerActivity;
     private Uri tempUri = null;
 
-    public BackgroundPicker(Activity activity) {
+    public BackgroundImagePicker(Activity activity) {
         mCallerActivity = activity;
     }
 
     @SuppressLint("NewApi")
-    public void imagePicker(int requestCode, int resultCode, Intent data) {
+    public void imagePickerListener(int requestCode, int resultCode, Intent data) {
         if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE && resultCode == RESULT_OK) {
             Uri imageUri = CropImage.getPickImageResultUri(mCallerActivity, data);
 

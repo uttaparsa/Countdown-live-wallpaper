@@ -24,7 +24,8 @@ import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.dialogs.MultiSelectDialog;
-import com.pfoss.countdownlivewallpaper.services.BackgroundPicker;
+import com.pfoss.countdownlivewallpaper.fragments.BackgroundSelectorDialog;
+import com.pfoss.countdownlivewallpaper.services.BackgroundImagePicker;
 import com.pfoss.countdownlivewallpaper.services.ImagePickerException;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
 import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
@@ -32,16 +33,14 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
-public class EditCountDownActivity extends AppCompatActivity {
+public class EditCountDownActivity extends AppCompatActivity implements DialogInterface.OnClickListener {
     private TimerRecord timerToEdit;
     private TimerViewModel timerViewModel;
     CardView textViewFrame;
     TextView textColorPreviewTextView;
     private Bitmap userSelectedBitmap;
-    private int userSelectedColor;
+    private BackgroundSelectorDialog backgroundSelectorDialog;
     boolean changedBeenMade = false;
-    private int itemSelected;
-    private BackgroundPicker backgroundPicker;
     public static final int GRADIENT_BACKGROUND = 0;
     public static final int IMAGE_BACKGROUND = 1;
     public static final int SOLID_BACKGROUND = 2;
@@ -54,8 +53,7 @@ public class EditCountDownActivity extends AppCompatActivity {
         loadTimerRecords();
         initializeToolbar();
         selectedUnits = timerToEdit.getActiveShowUnits().getActiveShowUnitsBoolArray();
-        backgroundPicker = new BackgroundPicker(this);
-
+        backgroundSelectorDialog = new BackgroundSelectorDialog(this);
         textViewFrame = findViewById(R.id.textColorPreviewBackground);
         textColorPreviewTextView = findViewById(R.id.textColorPreview);
         updateTextColorPreview();
@@ -107,84 +105,7 @@ public class EditCountDownActivity extends AppCompatActivity {
     }
 
     public void setBackgroundClickable(View view) {
-        final View passView = view;
-        String[] themeChoiceItems = getResources().getStringArray(R.array._choose_timer_theme_dialog_multi_choice_array);
-        itemSelected = 0;
-        new AlertDialog.Builder(this, R.style.CustomDialogTheme)
-                .setTitle(getResources().getString(R.string.choose_theme_dialog_title))
-                .setSingleChoiceItems(themeChoiceItems, itemSelected, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int selectedIndex) {
-                        itemSelected = selectedIndex;
-                        switch (selectedIndex) {
-                            case GRADIENT_BACKGROUND:
-
-                                break;
-                            case IMAGE_BACKGROUND:
-                                backgroundPicker.startCropImageActivity();
-                                break;
-                            case SOLID_BACKGROUND:
-                                AmbilWarnaDialog dialog = new AmbilWarnaDialog(passView.getContext(), R.attr.colorPrimary, new AmbilWarnaDialog.OnAmbilWarnaListener() {
-                                    @Override
-                                    public void onOk(AmbilWarnaDialog dialog, int color) {
-                                        // color is the color selected by the user.
-                                        userSelectedColor = color;
-                                    }
-
-                                    @Override
-                                    public void onCancel(AmbilWarnaDialog dialog) {
-                                        // cancel was selected by the user
-                                        userSelectedColor = Color.WHITE;//default color is white
-                                    }
-                                });
-
-                                dialog.show();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                })
-                .
-
-                        setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Log.d("CREATE-OK", "item-selected is :" + itemSelected);
-                                changedBeenMade = true;
-                                switch (itemSelected) {
-                                    case GRADIENT_BACKGROUND:
-
-                                        timerToEdit.setBackgroundTheme(BackgroundTheme.GRADIENT);
-                                        Log.d("CREATE-OK", "theme was set to gradient");
-
-                                        break;
-                                    case IMAGE_BACKGROUND:
-                                        saveImageFile();
-                                        Log.d("CREATE-OK", "theme was set to image");
-                                        timerToEdit.setBackgroundTheme(BackgroundTheme.PICTURE);
-
-                                        break;
-                                    case SOLID_BACKGROUND:
-
-                                        Log.d("CREATE-OK", "theme was set to solid");
-                                        timerToEdit.setBackGroundColor(userSelectedColor);
-                                        timerToEdit.setBackgroundTheme(BackgroundTheme.SOLID);
-
-                                        break;
-                                    default:
-                                        Log.d("CREATE-OK", "theme was set to default");
-                                        break;
-                                }
-                            }
-                        })
-                .
-
-                        setNegativeButton(getResources().getString(R.string.cancel), null)
-                .
-
-                        show();
-
+        backgroundSelectorDialog.show(view, this);
     }
 
 
@@ -193,10 +114,10 @@ public class EditCountDownActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE) {
-            backgroundPicker.imagePicker(requestCode, resultCode, data);
+            backgroundSelectorDialog.getBackgroundImagePicker().imagePickerListener(requestCode, resultCode, data);
         } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             try {
-                userSelectedBitmap = BitmapHelper.decodeUriAsBitmap(backgroundPicker.imageFetch(requestCode, resultCode, data), this);
+                userSelectedBitmap = BitmapHelper.decodeUriAsBitmap(backgroundSelectorDialog.getBackgroundImagePicker().imageFetch(requestCode, resultCode, data), this);
             } catch (ImagePickerException e) {
                 e.printStackTrace();
             }
@@ -205,7 +126,7 @@ public class EditCountDownActivity extends AppCompatActivity {
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE || requestCode == CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE) {
-            backgroundPicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            backgroundSelectorDialog.getBackgroundImagePicker().onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -220,6 +141,36 @@ public class EditCountDownActivity extends AppCompatActivity {
         timerViewModel.saveImageToInternalStorage(scaledBitmap, new ContextWrapper(getApplicationContext()), timerToEdit);
     }
 
+    // on click listener for background selection ok button
+    @Override
+    public void onClick(DialogInterface dialogInterface, int itemSelected) {
+        Log.d("CREATE-OK", "item-selected is :" + itemSelected);
+        changedBeenMade = true;
+        switch (itemSelected) {
+            case GRADIENT_BACKGROUND:
+
+                timerToEdit.setBackgroundTheme(BackgroundTheme.GRADIENT);
+                Log.d("CREATE-OK", "theme was set to gradient");
+
+                break;
+            case IMAGE_BACKGROUND:
+                saveImageFile();
+                Log.d("CREATE-OK", "theme was set to image");
+                timerToEdit.setBackgroundTheme(BackgroundTheme.PICTURE);
+
+                break;
+            case SOLID_BACKGROUND:
+
+                Log.d("CREATE-OK", "theme was set to solid");
+                timerToEdit.setBackGroundColor(backgroundSelectorDialog.getColorSelectedByUser());
+                timerToEdit.setBackgroundTheme(BackgroundTheme.SOLID);
+
+                break;
+            default:
+                Log.d("CREATE-OK", "theme was set to default");
+                break;
+        }
+    }
     @Override
     public void finish() {
         super.finish();

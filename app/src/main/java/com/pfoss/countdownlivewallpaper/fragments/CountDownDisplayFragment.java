@@ -133,6 +133,7 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
             drawer.stop();
             timerViewModel.deleteRecord(timerToDisplay);
             timerViewModel.fetchRecords();
+            timerToDisplay = timerViewModel.getLastSelectedTimer();
             if (!timerViewModel.getTimerRecords().isEmpty()) {
                 startDrawer();
             } else {

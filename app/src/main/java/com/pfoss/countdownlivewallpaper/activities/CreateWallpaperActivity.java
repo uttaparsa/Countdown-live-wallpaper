@@ -5,7 +5,6 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -25,13 +23,13 @@ import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
 import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
+import com.pfoss.countdownlivewallpaper.fragments.BackgroundSelectorDialog;
 import com.pfoss.countdownlivewallpaper.fragments.datepicker.DatePickerFragment;
 import com.pfoss.countdownlivewallpaper.fragments.datepicker.GregorianDatePicker;
 import com.pfoss.countdownlivewallpaper.fragments.datepicker.PersianDatePicker;
 import com.pfoss.countdownlivewallpaper.fragments.timepicker.GregorianTimePicker;
 import com.pfoss.countdownlivewallpaper.fragments.timepicker.PersianTimePicker;
 import com.pfoss.countdownlivewallpaper.fragments.timepicker.TimePickerFragment;
-import com.pfoss.countdownlivewallpaper.services.BackgroundPicker;
 import com.pfoss.countdownlivewallpaper.services.ImagePickerException;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
 import com.pfoss.countdownlivewallpaper.utils.RuntimeTools;
@@ -44,17 +42,22 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import yuku.ambilwarna.AmbilWarnaDialog;
+import static com.pfoss.countdownlivewallpaper.activities.EditCountDownActivity.IMAGE_BACKGROUND;
+import static com.pfoss.countdownlivewallpaper.activities.EditCountDownActivity.SOLID_BACKGROUND;
+import static com.pfoss.countdownlivewallpaper.fragments.BackgroundSelectorDialog.GRADIENT_BACKGROUND;
 
-public class CreateWallpaperActivity extends AppCompatActivity {
+public class CreateWallpaperActivity extends AppCompatActivity implements DialogInterface.OnClickListener {
 
 
     private static final String TAG = "CreateWallpaperActivity";
 
-    private int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal, secondFinal;
+    private int dayFinal;
+    private int monthFinal;
+    private int yearFinal;
+    private int hourFinal;
+    private int minuteFinal;
     private EditText labelEditText;
     private Bitmap userSelectedBitmap;
-    private int colorSelectedByUser;
     private Button dateSetButton;
     private ImageView backgroundImagePreview;
     private boolean hasUserSetDateAndTime = false;
@@ -63,12 +66,8 @@ public class CreateWallpaperActivity extends AppCompatActivity {
 
     private TimerRecord newTimerRecord;
     private TimerViewModel timerViewModel;
-    private int itemSelected;
-    private BackgroundPicker backgroundPicker;
+    private BackgroundSelectorDialog backgroundSelectorDialog;
 
-    public static final int GRADIENT_BACKGROUND = 0;
-    public static final int IMAGE_BACKGROUND = 1;
-    public static final int SOLID_BACKGROUND = 2;
     boolean isPersian = Locale.getDefault().getLanguage().equals(new Locale("fa").getLanguage());
 
 
@@ -76,19 +75,19 @@ public class CreateWallpaperActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_wallpaper);
-
         createInstanceOfViews();
         newTimerRecord = new TimerRecord();
         timerViewModel = new TimerViewModel(getApplicationContext());
+        backgroundSelectorDialog = new BackgroundSelectorDialog(this);
         dateSetButton.setOnClickListener(new View.OnClickListener() {//TODO : change this listener place
             @Override
             public void onClick(View view) {
                 Log.i("GOT", "date button click");
                 if (isPersian) {
-                    DatePickerFragment datePickerFragment = new PersianDatePicker(onGregorianDateSetListener);
+                    DatePickerFragment datePickerFragment = new PersianDatePicker(onPersianDateSetListener);
                     datePickerFragment.displayCalenderDialog(CreateWallpaperActivity.this);
                 } else {
-                    DatePickerFragment datePickerFragment = new GregorianDatePicker(onPersianDateSetListener);
+                    DatePickerFragment datePickerFragment = new GregorianDatePicker(onGregorianDateSetListener);
                     datePickerFragment.displayCalenderDialog(CreateWallpaperActivity.this);
                 }
 
@@ -99,7 +98,6 @@ public class CreateWallpaperActivity extends AppCompatActivity {
             RuntimeTools.markFirstRun(this);
         }
 
-        backgroundPicker = new BackgroundPicker(this);
     }
 
 
@@ -166,6 +164,43 @@ public class CreateWallpaperActivity extends AppCompatActivity {
 
     }
 
+    // on click listener for background selection ok button
+    @Override
+    public void onClick(DialogInterface dialogInterface, int useless) {
+
+        int selectedItem = backgroundSelectorDialog.getSelectedItem();
+
+        Log.d("CREATE-OK", "item-selected is :" + selectedItem);
+        hasUserSetBackground = true;
+        switch (selectedItem) {
+            case GRADIENT_BACKGROUND:
+
+                changePreviewToGradientPreview();
+                newTimerRecord.setBackgroundTheme(BackgroundTheme.GRADIENT);
+                Log.d("CREATE-OK", "theme was set to gradient");
+
+                break;
+            case IMAGE_BACKGROUND:
+
+                Log.d("CREATE-OK", "theme was set to image");
+                changePreviewToUserSetPreviewAndStoreImageFileInMemory();
+                newTimerRecord.setBackgroundTheme(BackgroundTheme.PICTURE);
+
+                break;
+            case SOLID_BACKGROUND:
+
+                Log.d("CREATE-OK", "theme was set to solid");
+                changePreviewToSolidPreview();
+                newTimerRecord.setBackGroundColor(backgroundSelectorDialog.getColorSelectedByUser());
+                newTimerRecord.setBackgroundTheme(BackgroundTheme.SOLID);
+
+                break;
+            default:
+                Log.d("CREATE-OK", "theme was set to default");
+                break;
+        }
+    }
+
     private void goToMainActivity() {
         Intent createCountdownIntent = new Intent(this, MainActivity.class);
         clearLastActivity(createCountdownIntent);
@@ -189,97 +224,17 @@ public class CreateWallpaperActivity extends AppCompatActivity {
 
 
     public void chooseBackgroundClickable(View view) {
-        final View passView = view;
-        String[] themeChoiceItems = getResources().getStringArray(R.array._choose_timer_theme_dialog_multi_choice_array);
-        itemSelected = 0;
-
-        new AlertDialog.Builder(this, R.style.CustomDialogTheme)
-                .setTitle(getResources().getString(R.string.choose_theme_dialog_title))
-                .setSingleChoiceItems(themeChoiceItems, itemSelected, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int selectedIndex) {
-                        itemSelected = selectedIndex;
-                        switch (selectedIndex) {
-                            case GRADIENT_BACKGROUND:
-
-                                break;
-                            case IMAGE_BACKGROUND:
-                                backgroundPicker.startCropImageActivity();
-                                break;
-                            case SOLID_BACKGROUND:
-                                AmbilWarnaDialog dialog = new AmbilWarnaDialog(passView.getContext(), R.attr.colorPrimary, new AmbilWarnaDialog.OnAmbilWarnaListener() {
-                                    @Override
-                                    public void onOk(AmbilWarnaDialog dialog, int color) {
-                                        // color is the color selected by the user.
-                                        colorSelectedByUser = color;
-                                    }
-
-                                    @Override
-                                    public void onCancel(AmbilWarnaDialog dialog) {
-                                        // cancel was selected by the user
-                                        colorSelectedByUser = Color.WHITE;// default color is white
-                                    }
-                                });
-
-                                dialog.show();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                })
-                .
-
-                        setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Log.d("CREATE-OK", "item-selected is :" + itemSelected);
-                                hasUserSetBackground = true;
-                                switch (itemSelected) {
-                                    case GRADIENT_BACKGROUND:
-
-                                        changePreviewToGradientPreview();
-                                        newTimerRecord.setBackgroundTheme(BackgroundTheme.GRADIENT);
-                                        Log.d("CREATE-OK", "theme was set to gradient");
-
-                                        break;
-                                    case IMAGE_BACKGROUND:
-
-                                        Log.d("CREATE-OK", "theme was set to image");
-                                        changePreviewToUserSetPreviewAndStoreImageFileInMemory();
-                                        newTimerRecord.setBackgroundTheme(BackgroundTheme.PICTURE);
-
-                                        break;
-                                    case SOLID_BACKGROUND:
-
-                                        Log.d("CREATE-OK", "theme was set to solid");
-                                        changePreviewToSolidPreview();
-                                        newTimerRecord.setBackGroundColor(colorSelectedByUser);
-                                        newTimerRecord.setBackgroundTheme(BackgroundTheme.SOLID);
-
-                                        break;
-                                    default:
-                                        Log.d("CREATE-OK", "theme was set to default");
-                                        break;
-                                }
-                            }
-                        })
-                .
-
-                        setNegativeButton(getResources().getString(R.string.cancel), null)
-                .
-                        show();
-
+        backgroundSelectorDialog.show(view, this);
     }
 
     private void changePreviewToSolidPreview() {
         backgroundImagePreview.setImageBitmap(null);
-        backgroundImagePreview.setBackgroundColor(colorSelectedByUser);
+        backgroundImagePreview.setBackgroundColor(backgroundSelectorDialog.getColorSelectedByUser());
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE || requestCode == CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE) {
-            backgroundPicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            backgroundSelectorDialog.getBackgroundImagePicker().onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -307,10 +262,10 @@ public class CreateWallpaperActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE) {
-            backgroundPicker.imagePicker(requestCode, resultCode, data);
+            backgroundSelectorDialog.getBackgroundImagePicker().imagePickerListener(requestCode, resultCode, data);
         } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             try {
-                userSelectedBitmap = BitmapHelper.decodeUriAsBitmap(backgroundPicker.imageFetch(requestCode, resultCode, data), this);
+                userSelectedBitmap = BitmapHelper.decodeUriAsBitmap(backgroundSelectorDialog.getBackgroundImagePicker().imageFetch(requestCode, resultCode, data), this);
             } catch (ImagePickerException e) {
                 e.printStackTrace();
             }
@@ -344,7 +299,7 @@ public class CreateWallpaperActivity extends AppCompatActivity {
         cal.set(Calendar.DAY_OF_MONTH, dayFinal);
         cal.set(Calendar.HOUR_OF_DAY, hourFinal);
         cal.set(Calendar.MINUTE, minuteFinal);
-        cal.set(Calendar.SECOND, secondFinal);
+        cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
