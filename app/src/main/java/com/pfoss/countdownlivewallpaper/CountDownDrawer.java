@@ -19,8 +19,10 @@ import com.pfoss.countdownlivewallpaper.data.ActiveShowUnits;
 import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.services.CountDownWallpaperService;
+import com.pfoss.countdownlivewallpaper.themes.Style;
 import com.pfoss.countdownlivewallpaper.themes.TextStyle;
 import com.pfoss.countdownlivewallpaper.utils.MyLinearGradient;
+import com.pfoss.countdownlivewallpaper.utils.RuntimeTools;
 import com.pfoss.countdownlivewallpaper.utils.UnitType;
 
 import java.text.DateFormat;
@@ -71,7 +73,7 @@ public class CountDownDrawer {
     public void setCurrentRecord(TimerRecord currentRecord) {
         this.currentRecord = currentRecord;
         Log.d(TAG, "setCurrentRecord: current record active unit s" + this.currentRecord.getActiveShowUnits().toString());
-        convertDipToPixel();
+        initializeUIElementsSizes();
         if (currentRecord.getBackgroundTheme() == BackgroundTheme.GRADIENT) initGradient();
         initStyles();
         initRunnable();
@@ -167,7 +169,7 @@ public class CountDownDrawer {
     private void drawUntil() {
         String textToShow = (datePassed) ? context.getResources().getString(R.string.since) : context.getResources().getString(R.string.until);
 
-        canvas.drawText(textToShow, UNITS_X_AXIS, UNTIL_Y_AXIS, untilStyle);
+        canvas.drawText(textToShow, UNTIL_X_AXIS, UNTIL_Y_AXIS, untilStyle);
     }
 
     private void drawDate() {
@@ -258,28 +260,6 @@ public class CountDownDrawer {
 
     private boolean datePassed;
 
-    private int getTimeDifferenceInSeconds() {
-        Calendar todayRightNow = Calendar.getInstance();
-
-        Date nowDate = todayRightNow.getTime();
-        Log.d("tagdate", "getTimeDifferenceInSeconds: today's date : " + nowDate);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getDefault());
-        long timeDifferenceInMillis = 0;
-        try {
-
-            timeDifferenceInMillis = nowDate.getTime() - sdf.parse(currentRecord.getDate()).getTime();
-            datePassed = timeDifferenceInMillis >= 0;
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-        }
-        timeDifferenceInMillis = Math.abs(timeDifferenceInMillis);
-
-        return (int) (timeDifferenceInMillis / 1000);
-    }
 
 
     private void drawNumber(UnitType unitName, int numberValue, int numberIndex) {
@@ -348,6 +328,7 @@ public class CountDownDrawer {
     int NUMBERS_X_AXIS;
     int UNITS_X_AXIS;
 
+
     int LABEL_X_AXIS;
     int LABEL_Y_AXIS;
     int LABEL_SPACE_TO_FIRST_NUMBER;
@@ -364,7 +345,7 @@ public class CountDownDrawer {
     int SPACE_BETWEEN_DATE_AND_CLOCK;
     int SPACE_BETWEEN_NUMBERS_AND_DATE;
 
-    private void convertDipToPixel() {//TODO: use point objects to organize values
+    private void initializeUIElementsSizes() {
         int navbarSize = PreferenceManager.getDefaultSharedPreferences(context).getInt("navbar_height", 10);
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         Log.d("HEIGHT", "current height is " + navbarSize);
@@ -375,10 +356,10 @@ public class CountDownDrawer {
 
         UNITS_X_AXIS = screenWidthInPixels / 2;
         NUMBERS_X_AXIS = screenWidthInPixels / 2;
-        SPACE_BETWEEN_UNITS = dipToPixel(context.getResources().getInteger(R.integer.space_between_units_in_dip));
+        SPACE_BETWEEN_UNITS = Style.dipToPixel(context.getResources().getInteger(R.integer.space_between_units_in_dip), context);
         FIRST_UNIT_Y_AXIS = screenHeightInPixels / 2 - (((currentRecord.getActiveShowUnits().count() - 1) * SPACE_BETWEEN_UNITS) / 2);
 
-        LABEL_SPACE_TO_FIRST_NUMBER = dipToPixel(context.getResources().getInteger(R.integer.label_space_to_first_number_in_dip));
+        LABEL_SPACE_TO_FIRST_NUMBER = Style.dipToPixel(context.getResources().getInteger(R.integer.label_space_to_first_number_in_dip), context);
         LABEL_Y_AXIS = FIRST_UNIT_Y_AXIS - LABEL_SPACE_TO_FIRST_NUMBER;
         LABEL_X_AXIS = screenWidthInPixels / 2;
 
@@ -386,12 +367,20 @@ public class CountDownDrawer {
         DATE_X_AXIS = screenWidthInPixels / 2;
         DATE_Y_AXIS = FIRST_UNIT_Y_AXIS + currentRecord.getActiveShowUnits().count() * SPACE_BETWEEN_UNITS + SPACE_BETWEEN_NUMBERS_AND_DATE;
 
-        SPACE_BETWEEN_DATE_AND_CLOCK = dipToPixel(context.getResources().getInteger(R.integer.space_between_date_and_clock));
+        SPACE_BETWEEN_DATE_AND_CLOCK = Style.dipToPixel(context.getResources().getInteger(R.integer.space_between_date_and_clock), context);
 
         CLOCK_X_AXIS = screenWidthInPixels / 2;
         CLOCK_Y_AXIS = DATE_Y_AXIS + SPACE_BETWEEN_DATE_AND_CLOCK;
 
         UNTIL_X_AXIS = screenWidthInPixels / 2;
+        int marginInPixels = Style.dipToPixel(context.getResources().getInteger(R.integer.until_margin_from_center), context);
+        Log.d(TAG, "initializeUIElementsSizes: margin in pixel : " + marginInPixels);
+        if (RuntimeTools.isPersian())
+            UNTIL_X_AXIS += marginInPixels;
+        else
+            UNTIL_X_AXIS -= marginInPixels;
+
+
         UNTIL_Y_AXIS = (DATE_Y_AXIS + CLOCK_Y_AXIS) / 2;
 
         Log.d(TAG, "convertDipToPixel: screenHeightInPixels : " + screenHeightInPixels);
@@ -403,17 +392,16 @@ public class CountDownDrawer {
 
     }
 
+    private int dipToPixel(int dipValue) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                dipValue, context.getResources().getDisplayMetrics());
+    }
 
     public void stop() {
         this.visible = false;
         handler.removeCallbacksAndMessages(null);
         Log.i(TAG, "called stop function");
     }
-
-
-    private int dipToPixel(int dipValue) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                dipValue, context.getResources().getDisplayMetrics());
-    }
 }
+
 

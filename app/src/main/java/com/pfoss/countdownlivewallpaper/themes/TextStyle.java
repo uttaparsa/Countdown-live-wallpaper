@@ -34,8 +34,8 @@ public class TextStyle extends Style {
         this.currentRecord = currentRecord;
         if(isPersian){
             numbersFont = ResourcesCompat.getFont(context,R.font.vazir_fd);
-            unitsFont = ResourcesCompat.getFont(context,R.font.vazir_medium);
-            labelFont = ResourcesCompat.getFont(context,R.font.vazir_medium);
+            unitsFont = ResourcesCompat.getFont(context, R.font.vazir_medium);
+            labelFont = ResourcesCompat.getFont(context, R.font.vazir_medium_fd);
         }else{
             numbersFont = ResourcesCompat.getFont(context,R.font.roboto_medium);
             unitsFont = ResourcesCompat.getFont(context,R.font.roboto_thin);

@@ -4,7 +4,6 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -25,7 +23,6 @@ import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
 import com.pfoss.countdownlivewallpaper.dialogs.MultiSelectDialog;
 import com.pfoss.countdownlivewallpaper.fragments.BackgroundSelectorDialog;
-import com.pfoss.countdownlivewallpaper.services.BackgroundImagePicker;
 import com.pfoss.countdownlivewallpaper.services.ImagePickerException;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
 import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
@@ -40,10 +37,11 @@ public class EditCountDownActivity extends AppCompatActivity implements DialogIn
     TextView textColorPreviewTextView;
     private Bitmap userSelectedBitmap;
     private BackgroundSelectorDialog backgroundSelectorDialog;
-    boolean changedBeenMade = false;
+    boolean changesBeenMade = false;
     public static final int GRADIENT_BACKGROUND = 0;
     public static final int IMAGE_BACKGROUND = 1;
     public static final int SOLID_BACKGROUND = 2;
+    private static String TAG = "EDITC";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +90,7 @@ public class EditCountDownActivity extends AppCompatActivity implements DialogIn
                 // color is the color selected by the user.
                 timerToEdit.setTextColor(color);
                 updateTextColorPreview();
-                changedBeenMade = true;
+                changesBeenMade = true;
             }
 
             @Override
@@ -143,10 +141,10 @@ public class EditCountDownActivity extends AppCompatActivity implements DialogIn
 
     // on click listener for background selection ok button
     @Override
-    public void onClick(DialogInterface dialogInterface, int itemSelected) {
-        Log.d("CREATE-OK", "item-selected is :" + itemSelected);
-        changedBeenMade = true;
-        switch (itemSelected) {
+    public void onClick(DialogInterface dialogInterface, int uselessItem) {
+        Log.d("CREATE-OK", "item-selected is :" + backgroundSelectorDialog.getSelectedItem());
+        changesBeenMade = true;
+        switch (backgroundSelectorDialog.getSelectedItem()) {
             case GRADIENT_BACKGROUND:
 
                 timerToEdit.setBackgroundTheme(BackgroundTheme.GRADIENT);
@@ -171,13 +169,15 @@ public class EditCountDownActivity extends AppCompatActivity implements DialogIn
                 break;
         }
     }
+
     @Override
-    public void finish() {
-        super.finish();
-        if (changedBeenMade) {
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+        if (changesBeenMade) {
+            Log.d(TAG, "onStop: done");
             timerViewModel.updateRecordsInSharedPreferences();
         }
-
     }
 
     private int getNavigationBarHeight() {
@@ -223,7 +223,7 @@ public class EditCountDownActivity extends AppCompatActivity implements DialogIn
         public void onClick(DialogInterface dialogInterface, int i) {
             Log.d("unitChoiceOk", "onClick: changing active units: " + timerToEdit.getActiveShowUnits().toString());
             timerToEdit.getActiveShowUnits().setActiveShowUnits(selectedUnits);
-            changedBeenMade = true;
+            changesBeenMade = true;
             Log.d("unitChoiceOk", "onClick: changing active units: " + timerToEdit.getActiveShowUnits().toString());
         }
     };

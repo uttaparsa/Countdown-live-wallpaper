@@ -76,8 +76,8 @@
     <string name="set_units">Set Units</string>
     <string name="unit_select_title">Units To Display</string>
     <string name="no_timer_found_image_description">No Timer Found</string>
-    <string name="since">"Since   "</string>
-    <string name="until">"Until     "</string>
+    <string name="since">"Since"</string>
+    <string name="until">"Until"</string>
     <string name="edit_count_down_title">Edit Countdown</string>
     <string name="countdown_widget_label">Countdown Widget</string>
     <string name="widget_configuration_activity">Select Countdown</string>

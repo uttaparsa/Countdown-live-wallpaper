@@ -15,7 +15,7 @@ public class PersianTimePicker extends TimePickerFragment implements com.mohamad
 
     @Override
     public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
-
+        this.mListener.onTimeSet(hourOfDay, minute);
     }
 
     @Override

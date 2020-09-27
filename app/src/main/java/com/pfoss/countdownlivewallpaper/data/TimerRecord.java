@@ -89,7 +89,7 @@ public class TimerRecord {
         return label;
     }
 
-    public Date getDateInstance(){
+    public Date getDateInstance() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sdf.setTimeZone(TimeZone.getDefault());
         Date date = null;
@@ -101,9 +101,10 @@ public class TimerRecord {
 
         return date;
     }
-    public int getTimeDifference(Date inputDate){
 
-        Log.d("tagdate", "getTimeDifferenceInSeconds: today's date : " + inputDate);
+    public int getTimeDifference(Date inputDate) {
+
+        Log.d("TR", "getTimeDifferenceInSeconds: today's date : " + inputDate);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sdf.setTimeZone(TimeZone.getDefault());
         long timeDifferenceInMillis = 0;
@@ -141,12 +142,22 @@ public class TimerRecord {
         Bitmap bitmap = null;
         try {
             File f = new File(this.getImagePath(), this.getId() + ".png");
+
             bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
 
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        return bitmap;
+
+    }
+
+    public Bitmap getBitmap(BitmapFactory.Options options) {
+        Bitmap bitmap = null;
+
+        bitmap = BitmapFactory.decodeFile(this.getImagePath() + this.getId(), options);
+
         return bitmap;
 
     }

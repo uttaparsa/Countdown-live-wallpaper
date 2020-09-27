@@ -36,6 +36,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.mohamadamin:persianmaterialdatetimepicker:1.2.1'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
+    implementation 'com.google.android:flexbox:2.0.1'
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
 }

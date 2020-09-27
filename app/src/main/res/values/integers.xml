@@ -28,5 +28,7 @@
     <integer name="date_text_size">14</integer>
     <integer name="since_or_until_text_size">18</integer>
     <integer name="space_between_numbers_and_date">20</integer>
+    <integer name="timer_list_item_size">240</integer>
+    <integer name="until_margin_from_center">20</integer>
 
 </resources>

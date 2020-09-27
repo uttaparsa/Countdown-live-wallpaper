@@ -16,9 +16,7 @@ import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
 
 public class TimerListActivity extends AppCompatActivity {
-    private RecyclerView mTimersListRecyclerView;
     private TimerListAdapter mTimersListAdapter;
-    private RecyclerView.LayoutManager mTimersListLayoutManager;
     private Handler handler;
 
 
@@ -31,9 +29,9 @@ public class TimerListActivity extends AppCompatActivity {
         TimerViewModel timerViewModel = new TimerViewModel(this.getApplicationContext());
         timerViewModel.fetchRecords();
 
-        mTimersListRecyclerView = findViewById(R.id.timerListView);
+        RecyclerView mTimersListRecyclerView = findViewById(R.id.timerListView);
         mTimersListRecyclerView.setHasFixedSize(true);
-        mTimersListLayoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager mTimersListLayoutManager = new LinearLayoutManager(this);
         mTimersListAdapter = new TimerListAdapter(timerViewModel.getTimerRecords());
 
         mTimersListRecyclerView.setLayoutManager(mTimersListLayoutManager);
@@ -50,7 +48,7 @@ public class TimerListActivity extends AppCompatActivity {
         final Runnable timersThread = new Runnable() {
             public void run() {
                 mTimersListAdapter.notifyDataSetChanged();
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 10000);
             }
         };
 

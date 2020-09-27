@@ -49,7 +49,7 @@ import static com.pfoss.countdownlivewallpaper.fragments.BackgroundSelectorDialo
 public class CreateWallpaperActivity extends AppCompatActivity implements DialogInterface.OnClickListener {
 
 
-    private static final String TAG = "CreateWallpaperActivity";
+    private static final String TAG = "CWActivity";
 
     private int dayFinal;
     private int monthFinal;
@@ -253,7 +253,7 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
     private void changePreviewToGradientPreview() {
         backgroundImagePreview.setImageBitmap(null);
 
-        backgroundImagePreview.setBackground(getResources().getDrawable(R.drawable.imageview_background));
+        backgroundImagePreview.setBackgroundResource(R.drawable.imageview_background);
     }
 
     @Override
