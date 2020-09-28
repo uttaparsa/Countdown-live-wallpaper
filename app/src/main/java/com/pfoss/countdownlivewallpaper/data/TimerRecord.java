@@ -6,11 +6,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
 
+import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -149,15 +152,6 @@ public class TimerRecord {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return bitmap;
-
-    }
-
-    public Bitmap getBitmap(BitmapFactory.Options options) {
-        Bitmap bitmap = null;
-
-        bitmap = BitmapFactory.decodeFile(this.getImagePath() + this.getId(), options);
-
         return bitmap;
 
     }

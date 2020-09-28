@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,8 +21,11 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
 import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
+import com.pfoss.countdownlivewallpaper.data.TimerBuilder;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
-import com.pfoss.countdownlivewallpaper.fragments.BackgroundSelectorDialog;
+import com.pfoss.countdownlivewallpaper.data.timerbuilderexception.BackgroundNotSetException;
+import com.pfoss.countdownlivewallpaper.data.timerbuilderexception.DateNotSetException;
+import com.pfoss.countdownlivewallpaper.dialogs.BackgroundSelectorDialog;
 import com.pfoss.countdownlivewallpaper.fragments.datepicker.DatePickerFragment;
 import com.pfoss.countdownlivewallpaper.fragments.datepicker.GregorianDatePicker;
 import com.pfoss.countdownlivewallpaper.fragments.datepicker.PersianDatePicker;
@@ -39,36 +41,26 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import static com.pfoss.countdownlivewallpaper.activities.EditCountDownActivity.IMAGE_BACKGROUND;
 import static com.pfoss.countdownlivewallpaper.activities.EditCountDownActivity.SOLID_BACKGROUND;
-import static com.pfoss.countdownlivewallpaper.fragments.BackgroundSelectorDialog.GRADIENT_BACKGROUND;
+import static com.pfoss.countdownlivewallpaper.dialogs.BackgroundSelectorDialog.GRADIENT_BACKGROUND;
 
 public class CreateWallpaperActivity extends AppCompatActivity implements DialogInterface.OnClickListener {
 
 
     private static final String TAG = "CWActivity";
 
-    private int dayFinal;
-    private int monthFinal;
-    private int yearFinal;
-    private int hourFinal;
-    private int minuteFinal;
+
     private EditText labelEditText;
     private Bitmap userSelectedBitmap;
     private Button dateSetButton;
     private ImageView backgroundImagePreview;
-    private boolean hasUserSetDateAndTime = false;
-    private boolean hasUserSetBackground = false;
-
-
-    private TimerRecord newTimerRecord;
+    private TimerBuilder timerBuilder;
+    private ShowcaseView backgroundImageIntro;
     private TimerViewModel timerViewModel;
     private BackgroundSelectorDialog backgroundSelectorDialog;
-
-    boolean isPersian = Locale.getDefault().getLanguage().equals(new Locale("fa").getLanguage());
 
 
     @Override
@@ -76,14 +68,15 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_wallpaper);
         createInstanceOfViews();
-        newTimerRecord = new TimerRecord();
+        timerBuilder = new TimerBuilder();
         timerViewModel = new TimerViewModel(getApplicationContext());
         backgroundSelectorDialog = new BackgroundSelectorDialog(this);
+        initBackgroundImageIntro();
         dateSetButton.setOnClickListener(new View.OnClickListener() {//TODO : change this listener place
             @Override
             public void onClick(View view) {
                 Log.i("GOT", "date button click");
-                if (isPersian) {
+                if (RuntimeTools.isPersian()) {
                     DatePickerFragment datePickerFragment = new PersianDatePicker(onPersianDateSetListener);
                     datePickerFragment.displayCalenderDialog(CreateWallpaperActivity.this);
                 } else {
@@ -94,21 +87,19 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
             }
         });
         if (RuntimeTools.isFirstRun(this)) {
-            showIntro();
+            backgroundImageIntro.show();
             RuntimeTools.markFirstRun(this);
         }
 
     }
 
-
-    private void showIntro() {
-        new ShowcaseView.Builder(this)
+    private void initBackgroundImageIntro() {
+        backgroundImageIntro = new ShowcaseView.Builder(this)
                 .setTarget(new ViewTarget(R.id.backgroundImageView, this))
                 .setContentTitle(getResources().getString(R.string.set_background_intro_showcase_title))
                 .setContentText(getResources().getString(R.string.set_background_intro_showcase))
                 .hideOnTouchOutside()
-                .build()
-                .show();
+                .build();
     }
 
     private void createInstanceOfViews() {
@@ -120,18 +111,17 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
     private TimePickerFragment.OnTimeSetListener onTimeSetListener = new GregorianTimePicker.OnTimeSetListener() {
         @Override
         public void onTimeSet(int hour, int minute) {
-            hourFinal = hour;
-            minuteFinal = minute;
-            hasUserSetDateAndTime = true;
-            Log.i("CREATE-TIMESET", "This is in order: " + yearFinal + " " + monthFinal + " " + dayFinal + " " + hourFinal + " " + minuteFinal + " ");
+            timerBuilder.setHourFinal(hour);
+            timerBuilder.setMinuteFinal(minute);
+            Log.i("CREATE-TIMESET", "This is in order: " + timerBuilder.getYearFinal() + " " + timerBuilder.getMonthFinal() + " " + timerBuilder.getDayFinal() + " " + timerBuilder.getHourFinal() + " " + timerBuilder.getMinuteFinal() + " ");
         }
     };
     private DatePickerFragment.OnDateSetListener onGregorianDateSetListener = new DatePickerFragment.OnDateSetListener() {
         @Override
         public void onDateSet(int year, int month, int day) {
-            yearFinal = year;
-            monthFinal = month;
-            dayFinal = day;
+            timerBuilder.setYearFinal(year);
+            timerBuilder.setMonthFinal(month);
+            timerBuilder.setDayFinal(day);
 
             TimePickerFragment timePickerFragment = new GregorianTimePicker(onTimeSetListener);
             timePickerFragment.displayTimePicker(CreateWallpaperActivity.this);
@@ -140,26 +130,31 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
     private DatePickerFragment.OnDateSetListener onPersianDateSetListener = new DatePickerFragment.OnDateSetListener() {
         @Override
         public void onDateSet(int year, int month, int day) {
-            yearFinal = year;
-            monthFinal = month;
-            dayFinal = day;
+            timerBuilder.setYearFinal(year);
+            timerBuilder.setMonthFinal(month);
+            timerBuilder.setDayFinal(day);
             TimePickerFragment timePickerFragment = new PersianTimePicker(onTimeSetListener);
             timePickerFragment.displayTimePicker(CreateWallpaperActivity.this);
         }
     };
 
     public void createNewTimerClickable(View view) {
-        if (hasUserSetDateAndTime && hasUserSetBackground) {
-            initializeRecordObject(newTimerRecord);
+
+        try {
+            TimerRecord newTimerRecord = timerBuilder.build();
+            newTimerRecord.setImagePath(TimerViewModel.saveImageToInternalStorage(userSelectedBitmap, new ContextWrapper(getApplicationContext()), newTimerRecord));
+            timerBuilder.setLabel(labelEditText.getText().toString());
+
             timerViewModel.saveNewRecord(newTimerRecord);
             Log.i("SAVE", "new record has been saved");
 
             goToMainActivity();
 
-        } else if (!hasUserSetDateAndTime) {
+        } catch (DateNotSetException dnse) {
             Toast.makeText(this, this.getString(R.string.toast_date_not_set), Toast.LENGTH_SHORT).show();
-        } else {
+        } catch (BackgroundNotSetException bnse) {
             Toast.makeText(this, this.getString(R.string.toast_background_not_set), Toast.LENGTH_SHORT).show();
+            backgroundImageIntro.show();
         }
 
     }
@@ -171,28 +166,27 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
         int selectedItem = backgroundSelectorDialog.getSelectedItem();
 
         Log.d("CREATE-OK", "item-selected is :" + selectedItem);
-        hasUserSetBackground = true;
         switch (selectedItem) {
             case GRADIENT_BACKGROUND:
 
                 changePreviewToGradientPreview();
-                newTimerRecord.setBackgroundTheme(BackgroundTheme.GRADIENT);
+                timerBuilder.setBackgroundTheme(BackgroundTheme.GRADIENT);
                 Log.d("CREATE-OK", "theme was set to gradient");
 
                 break;
             case IMAGE_BACKGROUND:
 
                 Log.d("CREATE-OK", "theme was set to image");
-                changePreviewToUserSetPreviewAndStoreImageFileInMemory();
-                newTimerRecord.setBackgroundTheme(BackgroundTheme.PICTURE);
+                changePreviewToUserSetPreview();
+                timerBuilder.setBackgroundTheme(BackgroundTheme.PICTURE);
 
                 break;
             case SOLID_BACKGROUND:
 
                 Log.d("CREATE-OK", "theme was set to solid");
                 changePreviewToSolidPreview();
-                newTimerRecord.setBackGroundColor(backgroundSelectorDialog.getColorSelectedByUser());
-                newTimerRecord.setBackgroundTheme(BackgroundTheme.SOLID);
+                timerBuilder.setBackGroundColor(backgroundSelectorDialog.getColorSelectedByUser());
+                timerBuilder.setBackgroundTheme(BackgroundTheme.SOLID);
 
                 break;
             default:
@@ -212,16 +206,6 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 
-    private void initializeRecordObject(TimerRecord timerRecord) {
-        timerRecord.setPriorToShow(true);
-        if (isPersian) {
-            timerRecord.setDate(getFormattedPersianDateTime());
-        } else {
-            timerRecord.setDate(getFormattedGregorianDateTime());
-        }
-        timerRecord.setLabel(labelEditText.getText().toString());
-    }
-
 
     public void chooseBackgroundClickable(View view) {
         backgroundSelectorDialog.show(view, this);
@@ -238,21 +222,12 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
         }
     }
 
-    private void changePreviewToUserSetPreviewAndStoreImageFileInMemory() {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-
-        int screenWidth = metrics.widthPixels;
-        int screenHeight = metrics.heightPixels + RuntimeTools.getNavigationBarHeight(this);
-        Log.d("CREATE", "screen height is :" + screenHeight + " screen width is " + screenWidth);
-
-        Bitmap scaledBitmap = BitmapHelper.scaleImageCenteredCrop(userSelectedBitmap, screenHeight, screenWidth);
-        backgroundImagePreview.setImageBitmap(scaledBitmap);
-        timerViewModel.saveImageToInternalStorage(scaledBitmap, new ContextWrapper(getApplicationContext()), newTimerRecord);
+    private void changePreviewToUserSetPreview() {
+        backgroundImagePreview.setImageBitmap(userSelectedBitmap);
     }
 
     private void changePreviewToGradientPreview() {
         backgroundImagePreview.setImageBitmap(null);
-
         backgroundImagePreview.setBackgroundResource(R.drawable.imageview_background);
     }
 
@@ -274,38 +249,6 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
 
     public void goBackClickableDrawable(View view) {
         this.onBackPressed();
-    }
-
-
-    private String getFormattedPersianDateTime() {
-        PersianCalendar persianCalendar = new PersianCalendar();
-        persianCalendar.setPersianDate(yearFinal, monthFinal, dayFinal);
-
-        Date time = persianCalendar.getTime();
-        time.setHours(hourFinal);
-        time.setMinutes(minuteFinal);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getDefault());
-
-        return sdf.format(time);
-
-    }
-
-    private String getFormattedGregorianDateTime() {
-        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-        cal.set(Calendar.YEAR, yearFinal);
-        cal.set(Calendar.MONTH, monthFinal);
-        cal.set(Calendar.DAY_OF_MONTH, dayFinal);
-        cal.set(Calendar.HOUR_OF_DAY, hourFinal);
-        cal.set(Calendar.MINUTE, minuteFinal);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getDefault());
-        return sdf.format(cal.getTime());
-
     }
 
 

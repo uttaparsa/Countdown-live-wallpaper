@@ -9,17 +9,20 @@ import androidx.fragment.app.DialogFragment;
 
 import com.pfoss.countdownlivewallpaper.R;
 
-public class MultiSelectDialog extends DialogFragment {
+public class UnitsSelectDialog extends DialogFragment {
     private static final String TAG = "MultiSelectDialog";
     private DialogInterface.OnClickListener onOkListener;
     private DialogInterface.OnMultiChoiceClickListener multiChoiceClickListener;
-    public MultiSelectDialog(DialogInterface.OnMultiChoiceClickListener multiChoiceClickListener , DialogInterface.OnClickListener onOkListener){
+
+    public UnitsSelectDialog(DialogInterface.OnMultiChoiceClickListener multiChoiceClickListener, DialogInterface.OnClickListener onOkListener) {
         super();
         this.multiChoiceClickListener = multiChoiceClickListener;
         this.onOkListener = onOkListener;
     }
-    boolean[] checkedItems ;
-    public void setCheckedItems(boolean[] checkedItems){
+
+    boolean[] checkedItems;
+
+    public void setCheckedItems(boolean[] checkedItems) {
         this.checkedItems = checkedItems;
     }
     @Override

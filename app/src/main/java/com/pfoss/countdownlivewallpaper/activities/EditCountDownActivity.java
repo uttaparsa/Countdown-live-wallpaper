@@ -21,8 +21,8 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import com.pfoss.countdownlivewallpaper.R;
 import com.pfoss.countdownlivewallpaper.data.BackgroundTheme;
 import com.pfoss.countdownlivewallpaper.data.TimerRecord;
-import com.pfoss.countdownlivewallpaper.dialogs.MultiSelectDialog;
-import com.pfoss.countdownlivewallpaper.fragments.BackgroundSelectorDialog;
+import com.pfoss.countdownlivewallpaper.dialogs.UnitsSelectDialog;
+import com.pfoss.countdownlivewallpaper.dialogs.BackgroundSelectorDialog;
 import com.pfoss.countdownlivewallpaper.services.ImagePickerException;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
 import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
@@ -224,7 +224,7 @@ public class EditCountDownActivity extends AppCompatActivity implements DialogIn
 
     public void setActiveUnits(View view) {
 
-        MultiSelectDialog activeUnitsSelectDialog = new MultiSelectDialog(unitChoiceClickListener, unitChoiceOkButtonListener);
+        UnitsSelectDialog activeUnitsSelectDialog = new UnitsSelectDialog(unitChoiceClickListener, unitChoiceOkButtonListener);
         activeUnitsSelectDialog.setCheckedItems(timerToEdit.getActiveShowUnits().getActiveShowUnitsBoolArray());
         activeUnitsSelectDialog.show(this.getSupportFragmentManager(), "selectTag");
     }

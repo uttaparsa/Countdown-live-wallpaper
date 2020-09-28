@@ -181,7 +181,7 @@ public class TimerViewModel {
     }
 
 
-    public String saveImageToInternalStorage(Bitmap bitmapImage, ContextWrapper cw, TimerRecord timerRecord) {
+    public static String saveImageToInternalStorage(Bitmap bitmapImage, ContextWrapper cw, TimerRecord timerRecord) {
 
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
         // Create imageDir
@@ -203,7 +203,6 @@ public class TimerViewModel {
                 e.printStackTrace();
             }
         }
-        timerRecord.setImagePath(directory.getAbsolutePath());
         return directory.getAbsolutePath();
     }
 

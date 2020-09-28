@@ -1,4 +1,4 @@
-package com.pfoss.countdownlivewallpaper.fragments;
+package com.pfoss.countdownlivewallpaper.dialogs;
 
 import android.app.Activity;
 import android.content.DialogInterface;
