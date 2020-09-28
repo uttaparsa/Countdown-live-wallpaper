@@ -26,9 +26,11 @@ import com.pfoss.countdownlivewallpaper.fragments.BackgroundSelectorDialog;
 import com.pfoss.countdownlivewallpaper.services.ImagePickerException;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
 import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
+import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.ColorPickerDialog;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 import com.theartofdev.edmodo.cropper.CropImage;
 
-import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class EditCountDownActivity extends AppCompatActivity implements DialogInterface.OnClickListener {
     private TimerRecord timerToEdit;
@@ -84,22 +86,29 @@ public class EditCountDownActivity extends AppCompatActivity implements DialogIn
 
 
     public void setTextColorClickable(View view) {
-        AmbilWarnaDialog colorSelectDialog = new AmbilWarnaDialog(view.getContext(), R.attr.colorPrimary, new AmbilWarnaDialog.OnAmbilWarnaListener() {
-            @Override
-            public void onOk(AmbilWarnaDialog dialog, int color) {
-                // color is the color selected by the user.
-                timerToEdit.setTextColor(color);
-                updateTextColorPreview();
-                changesBeenMade = true;
-            }
-
-            @Override
-            public void onCancel(AmbilWarnaDialog dialog) {
-
-            }
-        });
-        colorSelectDialog.show();
-
+        new ColorPickerDialog.Builder(this)
+                .setTitle(R.string.text_color_picker_dialog)
+                .setPreferenceName("MyColorPickerDialog")
+                .setPositiveButton(getString(R.string.ok),
+                        new ColorEnvelopeListener() {
+                            @Override
+                            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                                timerToEdit.setTextColor(envelope.getColor());
+                                updateTextColorPreview();
+                                changesBeenMade = true;
+                            }
+                        })
+                .setNegativeButton(getString(R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                .attachAlphaSlideBar(true) // the default value is true.
+                .attachBrightnessSlideBar(true)  // the default value is true.
+                .setBottomSpace(12) // set a bottom space between the last slidebar and buttons.
+                .show();
     }
 
     public void setBackgroundClickable(View view) {
@@ -176,6 +185,16 @@ public class EditCountDownActivity extends AppCompatActivity implements DialogIn
         Log.d(TAG, "onStop: ");
         if (changesBeenMade) {
             Log.d(TAG, "onStop: done");
+            timerViewModel.updateRecordsInSharedPreferences();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+        if (changesBeenMade) {
+            Log.d(TAG, "onPause: done");
             timerViewModel.updateRecordsInSharedPreferences();
         }
     }

@@ -32,7 +32,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.nightonke:boommenu:2.1.1'
-    implementation 'com.github.yukuku:ambilwarna:2.0.1'
+    implementation "com.github.skydoves:colorpickerview:2.2.0"
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.mohamadamin:persianmaterialdatetimepicker:1.2.1'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'

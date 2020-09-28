@@ -90,6 +90,7 @@
     <string name="sampletext">SampleText</string>
     <string name="units">units</string>
     <string name="remaining">remaining</string>
+    <string name="text_color_picker_dialog">pick a color for text</string>
 
 
 </resources>
