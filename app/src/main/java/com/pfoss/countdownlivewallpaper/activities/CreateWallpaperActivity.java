@@ -1,10 +1,15 @@
 package com.pfoss.countdownlivewallpaper.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +38,7 @@ import com.pfoss.countdownlivewallpaper.fragments.timepicker.GregorianTimePicker
 import com.pfoss.countdownlivewallpaper.fragments.timepicker.PersianTimePicker;
 import com.pfoss.countdownlivewallpaper.fragments.timepicker.TimePickerFragment;
 import com.pfoss.countdownlivewallpaper.services.ImagePickerException;
+import com.pfoss.countdownlivewallpaper.services.TimerDueBroadcastReceiver;
 import com.pfoss.countdownlivewallpaper.utils.BitmapHelper;
 import com.pfoss.countdownlivewallpaper.utils.RuntimeTools;
 import com.pfoss.countdownlivewallpaper.viewmodel.TimerViewModel;
@@ -141,10 +147,10 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
     public void createNewTimerClickable(View view) {
 
         try {
+            timerBuilder.setLabel(labelEditText.getText().toString());
             TimerRecord newTimerRecord = timerBuilder.build();
             newTimerRecord.setImagePath(TimerViewModel.saveImageToInternalStorage(userSelectedBitmap, new ContextWrapper(getApplicationContext()), newTimerRecord));
-            timerBuilder.setLabel(labelEditText.getText().toString());
-
+            setTimerDueNotifier(newTimerRecord);
             timerViewModel.saveNewRecord(newTimerRecord);
             Log.i("SAVE", "new record has been saved");
 
@@ -251,5 +257,22 @@ public class CreateWallpaperActivity extends AppCompatActivity implements Dialog
         this.onBackPressed();
     }
 
+    private void setTimerDueNotifier(TimerRecord timerRecord) {
+        Intent timerDueNotifierIntent = new Intent(getApplicationContext(), TimerDueBroadcastReceiver.class);
+        timerDueNotifierIntent.putExtra("timer_name", timerRecord.getLabel());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(CreateWallpaperActivity.this,
+                0,
+                timerDueNotifierIntent,
+                0);
+        long timeDifference = timerRecord.getTimeDifference(Calendar.getInstance().getTime()) * -1000;
+        Log.d(TAG, "setTimerDueNotifier: time difference in millis: " + timeDifference);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() + timeDifference,
+                pendingIntent);
+
+
+    }
 
 }

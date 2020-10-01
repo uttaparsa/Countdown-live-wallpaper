@@ -68,6 +68,8 @@
                 android:resource="@xml/countdown_timer_info" />
         </receiver>
 
+        <receiver android:name=".services.TimerDueBroadcastReceiver"/>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

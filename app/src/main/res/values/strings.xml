@@ -91,6 +91,10 @@
     <string name="units">units</string>
     <string name="remaining">remaining</string>
     <string name="text_color_picker_dialog">pick a color for text</string>
+    <string name="channel_name">Timer Due</string>
+    <string name="channel_description">This notifies you when one of your tiemrs is due.</string>
+    <string name="timer_is_due">Your timer is due....</string>
+    <string name="timer_is_due_decription">" %1$s is happening!"</string>
 
 
 </resources>

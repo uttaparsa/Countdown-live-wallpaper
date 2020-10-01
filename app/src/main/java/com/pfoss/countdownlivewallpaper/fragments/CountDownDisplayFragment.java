@@ -66,7 +66,9 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
         super.onResume();
         timerViewModel.fetchRecords();
         timerToDisplay = timerViewModel.getLastSelectedTimer();
-        drawer.setCurrentRecord(timerToDisplay);
+        if (timerToDisplay != null) {
+            drawer.setCurrentRecord(timerToDisplay);
+        }
         Log.d("DISPLAY", "onResume");
     }
 
@@ -115,7 +117,6 @@ public class CountDownDisplayFragment extends Fragment implements SurfaceHolder.
         }
         Log.i("DISPLAY-SURFACE", "surfaceDestroyed");
     }
-
 
 
     public void deleteTimer() {
